@@ -20,6 +20,18 @@ public class MarkerUnderstandingSample : MonoBehaviour
 {
     [SerializeField]
     private GameObject markerVisualPrefab;
+
+    [SerializeField]
+    private GameObject s1;
+
+    [SerializeField]
+    private GameObject s2;
+
+    [SerializeField]
+    private Vector3 offset1 = new Vector3(4, 0, 0);
+    
+    [SerializeField]
+    private Vector3 offset2 = new Vector3(0, 0, 4);
     private HashSet<GameObject> detectorVisuals = new();
     private MagicLeapMarkerUnderstandingFeature markerFeature;
     private MarkerDetectorSettings markerDetectorSettings;
@@ -70,8 +82,12 @@ public class MarkerUnderstandingSample : MonoBehaviour
             {
                 var markerVisual = Instantiate(markerVisualPrefab);
                 detectorVisuals.Add(markerVisual);
+                
                 markerVisual.transform.position = currentDetector.Data[i].MarkerPose.Value.position;
                 markerVisual.transform.rotation = currentDetector.Data[i].MarkerPose.Value.rotation;
+
+                s1.transform.position = markerVisual.transform.position + offset1;
+                s2.transform.position = markerVisual.transform.position + offset2;
 
                 builder.AppendLine("Marker:" + currentDetector.Data[i].MarkerString);
                 builder.AppendLine("Position: " + currentDetector.Data[i].MarkerPose?.position);
