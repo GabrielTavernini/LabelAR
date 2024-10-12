@@ -688,6 +688,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5589497132288526104, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5589497132288526104, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5589497132288526104, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1211144283
+      objectReference: {fileID: 0}
+    - target: {fileID: 5589497132288526104, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
@@ -778,6 +790,14 @@ PrefabInstance:
     - target: {fileID: 5589497133593145652, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
       propertyPath: m_Name
       value: XR Rig
+      objectReference: {fileID: 0}
+    - target: {fileID: 6169045109616253027, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      propertyPath: m_TrackingStateInput.m_Action.m_Id
+      value: 4f9a1139-9f2e-4c21-87ca-e452579f45dd
+      objectReference: {fileID: 0}
+    - target: {fileID: 6169045109616253027, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      propertyPath: m_TrackingStateInput.m_Action.m_Name
+      value: Tracking State Input
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
