@@ -1,6 +1,7 @@
 .DS_store
 Library/
 Logs/
+Temp/
 LabelAR_BurstDebugInformation_DoNotShip/
 build.apk
-
+*.csproj
