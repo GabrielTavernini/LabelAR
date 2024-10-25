@@ -5,3 +5,4 @@ Temp/
 LabelAR_BurstDebugInformation_DoNotShip/
 build.apk
 *.csproj
+Assets/StreamingAssets/*

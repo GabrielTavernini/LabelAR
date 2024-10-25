@@ -51,5 +51,8 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "LabelAR.sln"
+    "dotnet.defaultSolution": "LabelAR.sln",
+    "cSpell.words": [
+        "Polyface"
+    ]
 }
