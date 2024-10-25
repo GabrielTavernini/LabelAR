@@ -15,33 +15,21 @@ using MagicLeap.OpenXR.Features.MarkerUnderstanding;
 using System.Linq;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
-public class MarkerUnderstandingSample : MonoBehaviour
+public class MarkerUnderstanding : MonoBehaviour
 {
     [SerializeField]
     private GameObject markerVisualPrefab;
-
-    [SerializeField]
-    private GameObject s1;
-
-    [SerializeField]
-    private GameObject s2;
-
-    [SerializeField]
-    private Vector3 offset1 = new Vector3(4, 0, 0);
-    
-    [SerializeField]
-    private Vector3 offset2 = new Vector3(0, 0, 4);
-    private HashSet<GameObject> detectorVisuals = new();
     private MagicLeapMarkerUnderstandingFeature markerFeature;
-    private MarkerDetectorSettings markerDetectorSettings;
-    private MarkerDetector currentDetector;
-    private StringBuilder builder = new();
+    private bool firstDetection = true;
+    private Quaternion adjustment = Quaternion.Euler(-90, 0, 0);
+    static private GameObject aprilTag;
 
     private void Start()
     {
         markerFeature = OpenXRSettings.Instance.GetFeature<MagicLeapMarkerUnderstandingFeature>();
-        detectorVisuals = new HashSet<GameObject>();
+        // detectorVisuals = new HashSet<GameObject>();
         CreateDetector();
     }
 
@@ -49,6 +37,7 @@ public class MarkerUnderstandingSample : MonoBehaviour
     {
         //Create a detector based on a subset of settings. For fully customizable detector
         //creation, see the Marker Tracking scene in our Examples project. 
+        MarkerDetectorSettings markerDetectorSettings = new();
         markerDetectorSettings.MarkerDetectorProfile = MarkerDetectorProfile.Default;
         
         markerDetectorSettings.MarkerType = MarkerType.AprilTag;
@@ -57,49 +46,39 @@ public class MarkerUnderstandingSample : MonoBehaviour
         markerDetectorSettings.AprilTagSettings.EstimateAprilTagLength = true;
         
         markerFeature.CreateMarkerDetector(markerDetectorSettings);
+        aprilTag = Instantiate(markerVisualPrefab);
     }
 
-    private void ClearVisuals()
-    {
-        foreach (var visual in detectorVisuals)
-            Destroy(visual.gameObject);
-        detectorVisuals.Clear();
-    }
 
     private void Update()
     {
-        builder.Clear();
         markerFeature.UpdateMarkerDetectors();
-        currentDetector = markerFeature.MarkerDetectors[0];
-        int expectedVisualCount = currentDetector.Data.Where(d => d.MarkerPose != null).Count();
+        MarkerDetector detector = markerFeature.MarkerDetectors[0];
+        MarkerData? markerData = detector.Data.Where(d => d.MarkerPose != null).FirstOrDefault();
 
-        if (detectorVisuals.Count > expectedVisualCount)
-            ClearVisuals();
+        if (markerData.HasValue && markerData.Value.MarkerPose.HasValue)
+        {   
+            aprilTag.transform.position = markerData.Value.MarkerPose.Value.position;
+            aprilTag.transform.rotation = markerData.Value.MarkerPose.Value.rotation;
+            // aprilTag.transform.rotation *= adjustment;
 
-        for (int i = 0; i < currentDetector.Data.Count; i++)
-        {
-            if (currentDetector.Data[i].MarkerPose != null)
+            StringBuilder builder = new();
+            builder.AppendLine("Marker:" + markerData.Value.MarkerString);
+            builder.AppendLine("Position: " + aprilTag.transform.position);
+            builder.AppendLine("Rotation: " + aprilTag.transform.rotation);
+            aprilTag.GetComponentInChildren<TextMeshPro>().text = builder.ToString();
+            
+            if(firstDetection) 
             {
-                var markerVisual = Instantiate(markerVisualPrefab);
-                detectorVisuals.Add(markerVisual);
-                
-                markerVisual.transform.position = currentDetector.Data[i].MarkerPose.Value.position;
-                markerVisual.transform.rotation = currentDetector.Data[i].MarkerPose.Value.rotation;
-
-                s1.transform.position = markerVisual.transform.position + offset1;
-                s2.transform.position = markerVisual.transform.position + offset2;
-
-                builder.AppendLine("Marker:" + currentDetector.Data[i].MarkerString);
-                builder.AppendLine("Position: " + currentDetector.Data[i].MarkerPose?.position);
-                builder.AppendLine("Rotation: " + currentDetector.Data[i].MarkerPose?.rotation);
-                markerVisual.GetComponentInChildren<TextMeshPro>().text = builder.ToString();
+                firstDetection = false;
+                StartCoroutine(LabelLoader.Load((int) markerData.Value.MarkerNumber, aprilTag));
             }
         }
     }
 
     private void OnDestroy()
     {
-        ClearVisuals();
+        Destroy(aprilTag);
         markerFeature.DestroyAllMarkerDetectors();
     }
 }
