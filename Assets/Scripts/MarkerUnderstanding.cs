@@ -23,7 +23,7 @@ public class MarkerUnderstanding : MonoBehaviour
     private GameObject markerVisualPrefab;
     private MagicLeapMarkerUnderstandingFeature markerFeature;
     private bool firstDetection = true;
-    private Quaternion adjustment = Quaternion.Euler(-90, 0, 0);
+    static public Quaternion adjustment = Quaternion.Euler(-90, 0, 0);
     static private GameObject aprilTag;
 
     private void Start()
@@ -57,7 +57,12 @@ public class MarkerUnderstanding : MonoBehaviour
         MarkerData? markerData = detector.Data.Where(d => d.MarkerPose != null).FirstOrDefault();
 
         if (markerData.HasValue && markerData.Value.MarkerPose.HasValue)
-        {   
+        { 
+            float magnitude = (aprilTag.transform.position - markerData.Value.MarkerPose.Value.position).magnitude;
+            float angle = Quaternion.Angle(aprilTag.transform.rotation, markerData.Value.MarkerPose.Value.rotation);
+            if(!firstDetection && (magnitude < 0.1 || angle < 0.1))
+                return; // no need to update on small movements
+
             aprilTag.transform.position = markerData.Value.MarkerPose.Value.position;
             aprilTag.transform.rotation = markerData.Value.MarkerPose.Value.rotation;
             // aprilTag.transform.rotation *= adjustment;

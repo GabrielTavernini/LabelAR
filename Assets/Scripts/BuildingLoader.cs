@@ -20,20 +20,26 @@ public class BuildingLoader : MonoBehaviour
     private Material highlightMaterial;
 
     [SerializeField]
-    private GameObject parentObject;
+    private List<String> documentNames;
 
-    [SerializeField]
-    private List<String> documents;
+    private List<DxfDocument> documents = new();
+
+    protected Coordinates markerCoordinates;
+
+    protected GameObject marker;
+
+    protected static BuildingLoader instance;
 
     // Start is called before the first frame update
     void Start()
     {
+        instance = this;
         StartCoroutine(LoadDocuments());
     }
 
     private IEnumerator LoadDocuments()
     {
-        foreach (string fileName in documents)
+        foreach (string fileName in documentNames)
         {
             Debug.Log("Loading doc " + fileName);
             string filePath = Path.Combine(Application.streamingAssetsPath, fileName);
@@ -53,20 +59,32 @@ public class BuildingLoader : MonoBehaviour
                 else
                 {
                     MemoryStream ms = new MemoryStream(uwr.downloadHandler.data);
-                    Task<DxfDocument> loadTask = Task.Run(() => DxfDocument.Load(ms));
-                    while (!loadTask.IsCompleted)
-                        yield return null;
+                    Task loadTask = Task.Run(() => {
+                        try {
+                            documents.Add(DxfDocument.Load(ms));
+                            Debug.Log("Finished loading " + fileName);
+                        } catch(Exception e) {
+                            Debug.Log("Error loading " + fileName);
+                            Debug.Log(e.StackTrace);
+                        }
+                    });
                     
-                    if (loadTask.IsFaulted)
-                        Debug.LogError("Error loading DXF document: " + loadTask.Exception);
-                    else
-                        StartCoroutine(GenerateBuildings(loadTask.Result));
+                    //StartCoroutine(GenerateBuildings(loadTask.Result));
                 }
             }
         }
     }
 
-    private IEnumerator GenerateBuildings(DxfDocument doc)
+    public static void GenerateBuildings(Coordinates markerCoordinates, GameObject marker) {
+        Debug.Log("Marker swiss coords: " + markerCoordinates);
+        instance.marker = marker;
+        instance.markerCoordinates = markerCoordinates;
+        foreach (DxfDocument doc in instance.documents) {
+            instance.StartCoroutine(instance.GenerateBuildings(doc));
+        }
+    }
+
+    protected IEnumerator GenerateBuildings(DxfDocument doc)
     {
         Debug.Log("Loading " + doc.Entities.PolyfaceMeshes.Count() + " meshes.");
         IEnumerator<PolyfaceMesh> e = doc.Entities.PolyfaceMeshes.GetEnumerator();
@@ -79,9 +97,9 @@ public class BuildingLoader : MonoBehaviour
 
     private UnityEngine.Vector3 ConvertCoordinates(netDxf.Vector3 vec)
     {
-        float x = (float)(vec.X - 2682826);
-        float y = (float)(vec.Z - 478);
-        float z = (float)(vec.Y - 1250481);
+        float x = (float)(vec.X - this.markerCoordinates.east);
+        float y = (float)(vec.Z - this.markerCoordinates.altitude);
+        float z = (float)(vec.Y - this.markerCoordinates.north);
         return new UnityEngine.Vector3(x, y, z);
     }
 
@@ -96,7 +114,7 @@ public class BuildingLoader : MonoBehaviour
 
         // Create a new GameObject for the mesh
         GameObject polyfaceMeshObj = new GameObject(polyfaceMesh.Handle);
-        polyfaceMeshObj.transform.parent = parentObject.transform;
+        polyfaceMeshObj.transform.parent = marker.transform;
 
         // Add MeshFilter and MeshRenderer components
         MeshFilter meshFilter = polyfaceMeshObj.AddComponent<MeshFilter>();
@@ -119,20 +137,20 @@ public class BuildingLoader : MonoBehaviour
             if (face.VertexIndexes.Count() == 3)
             {
                 // If the face is a triangle
-                triangles.Add(face.VertexIndexes[0] - 1);  // DXF is 1-indexed, Unity uses 0-indexing
+                triangles.Add(face.VertexIndexes[2] - 1);  // DXF is 1-indexed, Unity uses 0-indexing
                 triangles.Add(face.VertexIndexes[1] - 1);
-                triangles.Add(face.VertexIndexes[2] - 1);
+                triangles.Add(face.VertexIndexes[0] - 1);
             }
             else if (face.VertexIndexes.Count() == 4)
             {
                 // If the face is a quad, split it into two triangles
-                triangles.Add(face.VertexIndexes[0] - 1);
+                triangles.Add(face.VertexIndexes[2] - 1);
                 triangles.Add(face.VertexIndexes[1] - 1);
-                triangles.Add(face.VertexIndexes[2] - 1);
-
                 triangles.Add(face.VertexIndexes[0] - 1);
-                triangles.Add(face.VertexIndexes[2] - 1);
+
                 triangles.Add(face.VertexIndexes[3] - 1);
+                triangles.Add(face.VertexIndexes[2] - 1);
+                triangles.Add(face.VertexIndexes[0] - 1);
             }
         }
 
@@ -151,7 +169,7 @@ public class BuildingLoader : MonoBehaviour
         if (polyfaceMesh.Handle == "5BEA1")
             meshRenderer.material = highlightMaterial;
 
-        polyfaceMeshObj.transform.localScale = new UnityEngine.Vector3(0.01f, 0.01f, 0.01f);
+        //polyfaceMeshObj.transform.localScale = new UnityEngine.Vector3(0.01f, 0.01f, 0.01f);
         return polyfaceMeshObj;
     }
 

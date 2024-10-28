@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicLeap.SetupTool.Editor", "MagicLeap.SetupTool.Editor.csproj", "{FB6DBAB8-AE18-AA7E-A0EF-EEDEDBDB141B}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{5026F731-5BDD-C026-C309-8242B032BC13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThirdParty.Bunny83.simpleJson", "ThirdParty.Bunny83.simpleJson.csproj", "{88FB8C91-93A7-23C8-0ECF-9F9BE6212FAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +13,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB6DBAB8-AE18-AA7E-A0EF-EEDEDBDB141B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB6DBAB8-AE18-AA7E-A0EF-EEDEDBDB141B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB6DBAB8-AE18-AA7E-A0EF-EEDEDBDB141B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB6DBAB8-AE18-AA7E-A0EF-EEDEDBDB141B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5026F731-5BDD-C026-C309-8242B032BC13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5026F731-5BDD-C026-C309-8242B032BC13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5026F731-5BDD-C026-C309-8242B032BC13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5026F731-5BDD-C026-C309-8242B032BC13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88FB8C91-93A7-23C8-0ECF-9F9BE6212FAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88FB8C91-93A7-23C8-0ECF-9F9BE6212FAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88FB8C91-93A7-23C8-0ECF-9F9BE6212FAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88FB8C91-93A7-23C8-0ECF-9F9BE6212FAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

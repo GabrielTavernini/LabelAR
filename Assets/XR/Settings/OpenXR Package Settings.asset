@@ -523,7 +523,7 @@ MonoBehaviour:
   priority: 0
   required: 0
   perceptionSnapshots: 0
-  farClipPolicy: 2
+  farClipPolicy: 0
   nearClipPolicy: 1
 --- !u!114 &-1769897035124741978
 MonoBehaviour:

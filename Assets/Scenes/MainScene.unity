@@ -416,7 +416,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1659712322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -431,9 +431,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: f092af6c3c6694b05adafa8fbb09ceb8, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 48e9eea92ace2408e95c7b8e089d28dd, type: 2}
-  parentObject: {fileID: 1659712321}
-  documents:
-  - SWISSBUILDINGS3D_2_0_CHLV95LN02_1091-23.dxf
+  documentNames:
   - SWISSBUILDINGS3D_2_0_CHLV95LN02_1091-41.dxf
 --- !u!4 &1659712323
 Transform:
@@ -653,6 +651,10 @@ PrefabInstance:
     - target: {fileID: 5593219067060734525, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 5609791579423962305, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      propertyPath: field of view
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 5609791579423962305, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
       propertyPath: far clip plane
