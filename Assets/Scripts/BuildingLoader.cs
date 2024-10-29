@@ -6,8 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using netDxf;
 using netDxf.Entities;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -136,6 +134,8 @@ public class BuildingLoader : MonoBehaviour
         // Add MeshFilter and MeshRenderer components
         MeshFilter meshFilter = polyfaceMeshObj.AddComponent<MeshFilter>();
         MeshRenderer meshRenderer = polyfaceMeshObj.AddComponent<MeshRenderer>();
+        meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        meshRenderer.receiveShadows = false;
 
         // Create a new Unity Mesh
         UnityEngine.Mesh mesh = new UnityEngine.Mesh();

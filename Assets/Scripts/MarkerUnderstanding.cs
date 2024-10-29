@@ -36,7 +36,7 @@ public class MarkerUnderstanding : MonoBehaviour
 
 #if !UNITY_ANDROID || UNITY_EDITOR
         aprilTag.transform.position = new Vector3(0, 0, 0);
-        aprilTag.transform.rotation = Quaternion.Euler(new Vector3(0,120,0));
+        aprilTag.transform.rotation = Quaternion.Euler(new Vector3(0, 120, 0));
 
         StringBuilder builder = new();
         builder.AppendLine("Position: " + aprilTag.transform.position);
@@ -70,15 +70,13 @@ public class MarkerUnderstanding : MonoBehaviour
     {
 #if !UNITY_ANDROID || UNITY_EDITOR
 #else
-        if (!firstDetection) return;
-
         markerFeature.UpdateMarkerDetectors();
         MarkerDetector detector = markerFeature.MarkerDetectors[0];
         MarkerData? markerData = detector.Data.Where(d => d.MarkerPose != null).FirstOrDefault();
 
-        if (markerData.HasValue && markerData.Value.MarkerPose.HasValue && markerData.Value.MarkerPose.Value.position.magnitude > 0)
+        if (markerData.HasValue && markerData.Value.MarkerPose.HasValue 
+            && markerData.Value.MarkerPose.Value.position.magnitude > 0)
         {
-            firstDetection = false;
             aprilTag.transform.position = markerData.Value.MarkerPose.Value.position;
             aprilTag.transform.rotation = markerData.Value.MarkerPose.Value.rotation;
             aprilTag.transform.Rotate(-90, 0, 0);
@@ -89,8 +87,10 @@ public class MarkerUnderstanding : MonoBehaviour
             builder.AppendLine("Rotation: " + aprilTag.transform.rotation);
             aprilTag.GetComponentInChildren<TextMeshPro>().text = builder.ToString();
 
-            StartCoroutine(LabelLoader.Load((int)markerData.Value.MarkerNumber, aprilTag));
-            markerFeature.DestroyAllMarkerDetectors();
+            if (firstDetection) {
+                firstDetection = false;
+                StartCoroutine(LabelLoader.Load((int)markerData.Value.MarkerNumber, aprilTag));
+            }
         }
 #endif
     }
@@ -98,6 +98,6 @@ public class MarkerUnderstanding : MonoBehaviour
     private void OnDestroy()
     {
         Destroy(aprilTag);
-        // markerFeature.DestroyAllMarkerDetectors();
+        markerFeature.DestroyAllMarkerDetectors();
     }
 }
