@@ -49,18 +49,22 @@ public class LabelLoader : MonoBehaviour
 {
     [SerializeField]
     private GameObject prefab;
-    
+
     [SerializeField]
     private Material textMaterial;
+
+    private GameObject labels;
 
     static private LabelLoader instance;
 
     void Start()
     {
+        labels = new GameObject("Labels");
         instance = this;
     }
 
-    static public IEnumerator Load(int code, GameObject marker) {
+    static public IEnumerator Load(int code, GameObject marker)
+    {
         StringBuilder builder = new StringBuilder();
         builder.AppendLine("Spawning labels starting from");
         builder.AppendLine("Code: " + code);
@@ -68,11 +72,15 @@ public class LabelLoader : MonoBehaviour
         builder.AppendLine("Rotation: " + marker.transform.rotation);
         Debug.Log(builder.ToString());
 
+        instance.labels.transform.parent = marker.transform;
+        instance.labels.transform.localPosition = new Vector3();
+        instance.labels.transform.localRotation = Quaternion.identity;
+
         string url = "labelar.ilbrigante.me/get_labels?number=" + code;
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             yield return request.SendWebRequest();
-
+            // yield return null;
             if (request.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError("Error fetching data: " + request.error);
@@ -81,6 +89,7 @@ public class LabelLoader : MonoBehaviour
             {
                 // Parse the JSON response
                 string jsonResponse = request.downloadHandler.text;
+                // string jsonResponse = "{\"coordinates\":{\"east\":2683740.369,\"north\":1250632.114,\"altitude\":472.775},\"labels\":[{\"name\":\"WG_TEST\",\"distance\":10.26,\"x\":20,\"y\":0,\"z\":0},{\"name\":\"Lake Zurich\",\"distance\":1461.26,\"x\":-278.9903675355017,\"y\":-41.0,\"z\":-1434.4294453682378},{\"name\":\"Zurich Hauptbahnhof\",\"distance\":441.97,\"x\":-423.6082664085552,\"y\":-39.0,\"z\":126.13132119132206},{\"name\":\"HG\",\"distance\":102.88,\"x\":102.8826160794124,\"y\":48.0,\"z\":-0.7712020566686988},{\"name\":\"Grossm\u00FCnster\",\"distance\":733.62,\"x\":-207.2370368060656,\"y\":23.0,\"z\":-703.7734117538203},{\"name\":\"Fraumunster\",\"distance\":848.76,\"x\":-383.7784227631055,\"y\":23.0,\"z\":-757.0725818965584}]}";
                 Debug.Log("Labels received from server: " + jsonResponse);
 
 
@@ -89,7 +98,7 @@ public class LabelLoader : MonoBehaviour
 
                 // Start coroutines to spawn buildings
                 Debug.Log("Start spawning buildings!");
-                BuildingLoader.GenerateBuildings(response.coordinates, marker);
+                instance.StartCoroutine(BuildingLoader.GenerateBuildings(response.coordinates, marker));
 
                 Debug.Log("Spawning " + response.labels.Count + " labels!");
                 // Spawn game objects with text at each position
@@ -100,15 +109,14 @@ public class LabelLoader : MonoBehaviour
     }
 
     static void SpawnObjectAtPosition(Label label, GameObject marker)
-    { 
+    {
         Debug.Log("Spawning label " + label.name + " at " + label.x + " " + label.y + " " + label.z);
-        GameObject obj = Instantiate(instance.prefab, new Vector3(label.x, label.y, label.z), Quaternion.identity);
+        GameObject obj = Instantiate(instance.prefab);
+        obj.transform.parent = instance.labels.transform;
+        obj.transform.localPosition = new Vector3(label.x, label.y, label.z);
         obj.name = label.name;
-        
+
         obj.transform.localScale = new Vector3(10f, 10f, 10f);
-        // int scale = 3*3;
-        // obj.transform.localScale = new Vector3(scale, scale, scale);
-        obj.transform.parent = marker.transform;
 
         // Add a TextMesh component to display the text
         TextMeshPro textMesh = obj.AddComponent<TextMeshPro>();

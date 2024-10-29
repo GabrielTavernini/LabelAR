@@ -291,7 +291,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a97b576c1ce593046b984bca691aa831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  markerVisualPrefab: {fileID: 1945816791856280063, guid: d8cc799a5515d4c6a949fda765bdc5e9, type: 3}
+  markerVisualPrefab: {fileID: 8833532083314790188, guid: d8cc799a5515d4c6a949fda765bdc5e9, type: 3}
+  interactionManager: {fileID: 791039535}
 --- !u!4 &407431672
 Transform:
   m_ObjectHideFlags: 0
@@ -431,6 +432,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: f092af6c3c6694b05adafa8fbb09ceb8, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 48e9eea92ace2408e95c7b8e089d28dd, type: 2}
+  highlightMaterial2: {fileID: 2100000, guid: 7e8efcf58a4ac441d9d286b4ce95aa42, type: 2}
   documentNames:
   - SWISSBUILDINGS3D_2_0_CHLV95LN02_1091-41.dxf
 --- !u!4 &1659712323
@@ -490,7 +492,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5589497132288526104, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
       propertyPath: m_SortingLayerID
-      value: -1211144283
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5589497132288526104, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
       propertyPath: m_Materials.Array.data[0]

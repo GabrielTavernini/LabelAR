@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using netDxf;
 using netDxf.Entities;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -20,19 +21,23 @@ public class BuildingLoader : MonoBehaviour
     private Material highlightMaterial;
 
     [SerializeField]
+    private Material highlightMaterial2;
+
+    [SerializeField]
     private List<String> documentNames;
 
     private List<DxfDocument> documents = new();
 
-    protected Coordinates markerCoordinates;
+    private Coordinates markerCoordinates;
 
-    protected GameObject marker;
+    private GameObject buildings;
 
-    protected static BuildingLoader instance;
+    private static BuildingLoader instance;
 
     // Start is called before the first frame update
     void Start()
     {
+        buildings = new GameObject("Buildings");
         instance = this;
         StartCoroutine(LoadDocuments());
     }
@@ -59,29 +64,39 @@ public class BuildingLoader : MonoBehaviour
                 else
                 {
                     MemoryStream ms = new MemoryStream(uwr.downloadHandler.data);
-                    Task loadTask = Task.Run(() => {
-                        try {
+                    Task loadTask = Task.Run(() =>
+                    {
+                        try
+                        {
                             documents.Add(DxfDocument.Load(ms));
                             Debug.Log("Finished loading " + fileName);
-                        } catch(Exception e) {
+                        }
+                        catch (Exception e)
+                        {
                             Debug.Log("Error loading " + fileName);
                             Debug.Log(e.StackTrace);
                         }
                     });
-                    
-                    //StartCoroutine(GenerateBuildings(loadTask.Result));
                 }
             }
         }
     }
 
-    public static void GenerateBuildings(Coordinates markerCoordinates, GameObject marker) {
+    public static IEnumerator GenerateBuildings(Coordinates markerCoordinates, GameObject marker)
+    {
+        while (instance.documents.Count < instance.documentNames.Count)
+            yield return null;
+
         Debug.Log("Marker swiss coords: " + markerCoordinates);
-        instance.marker = marker;
+        instance.buildings.transform.parent = marker.transform;
+        instance.buildings.transform.localPosition = new UnityEngine.Vector3();
+        instance.buildings.transform.localRotation = Quaternion.identity;
         instance.markerCoordinates = markerCoordinates;
-        foreach (DxfDocument doc in instance.documents) {
+        foreach (DxfDocument doc in instance.documents)
+        {
             instance.StartCoroutine(instance.GenerateBuildings(doc));
         }
+        instance.documents.Clear();
     }
 
     protected IEnumerator GenerateBuildings(DxfDocument doc)
@@ -114,7 +129,9 @@ public class BuildingLoader : MonoBehaviour
 
         // Create a new GameObject for the mesh
         GameObject polyfaceMeshObj = new GameObject(polyfaceMesh.Handle);
-        polyfaceMeshObj.transform.parent = marker.transform;
+        polyfaceMeshObj.transform.parent = buildings.transform;
+        polyfaceMeshObj.transform.localPosition = new UnityEngine.Vector3();
+        polyfaceMeshObj.transform.localRotation = Quaternion.identity;
 
         // Add MeshFilter and MeshRenderer components
         MeshFilter meshFilter = polyfaceMeshObj.AddComponent<MeshFilter>();
@@ -169,6 +186,8 @@ public class BuildingLoader : MonoBehaviour
         if (polyfaceMesh.Handle == "5BEA1")
             meshRenderer.material = highlightMaterial;
 
+        if (polyfaceMesh.Handle == "1CD66")
+            meshRenderer.material = highlightMaterial2;
         //polyfaceMeshObj.transform.localScale = new UnityEngine.Vector3(0.01f, 0.01f, 0.01f);
         return polyfaceMeshObj;
     }

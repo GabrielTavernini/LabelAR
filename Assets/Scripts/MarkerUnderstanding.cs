@@ -16,21 +16,38 @@ using System.Linq;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class MarkerUnderstanding : MonoBehaviour
 {
     [SerializeField]
     private GameObject markerVisualPrefab;
+    [SerializeField]
+    private XRInteractionManager interactionManager;
     private MagicLeapMarkerUnderstandingFeature markerFeature;
     private bool firstDetection = true;
-    static public Quaternion adjustment = Quaternion.Euler(-90, 0, 0);
+    static public Quaternion adjustment = Quaternion.Euler(0, 0, -90);
     static private GameObject aprilTag;
 
     private void Start()
     {
+        aprilTag = Instantiate(markerVisualPrefab);
+        aprilTag.name = "Marker";
+
+#if !UNITY_ANDROID || UNITY_EDITOR
+        aprilTag.transform.position = new Vector3(0, 0, 0);
+        aprilTag.transform.rotation = Quaternion.Euler(new Vector3(0,120,0));
+
+        StringBuilder builder = new();
+        builder.AppendLine("Position: " + aprilTag.transform.position);
+        builder.AppendLine("Rotation: " + aprilTag.transform.rotation);
+        aprilTag.GetComponentInChildren<TextMeshPro>().text = builder.ToString();
+
+        StartCoroutine(LabelLoader.Load((int)0, aprilTag));
+#else
         markerFeature = OpenXRSettings.Instance.GetFeature<MagicLeapMarkerUnderstandingFeature>();
-        // detectorVisuals = new HashSet<GameObject>();
         CreateDetector();
+#endif
     }
 
     private void CreateDetector()
@@ -39,51 +56,48 @@ public class MarkerUnderstanding : MonoBehaviour
         //creation, see the Marker Tracking scene in our Examples project. 
         MarkerDetectorSettings markerDetectorSettings = new();
         markerDetectorSettings.MarkerDetectorProfile = MarkerDetectorProfile.Default;
-        
+
         markerDetectorSettings.MarkerType = MarkerType.AprilTag;
         markerDetectorSettings.AprilTagSettings.AprilTagType = AprilTagType.Dictionary_16H5;
         markerDetectorSettings.AprilTagSettings.AprilTagLength = 115 / 1000f;
         markerDetectorSettings.AprilTagSettings.EstimateAprilTagLength = true;
-        
+
         markerFeature.CreateMarkerDetector(markerDetectorSettings);
-        aprilTag = Instantiate(markerVisualPrefab);
     }
 
 
     private void Update()
     {
+#if !UNITY_ANDROID || UNITY_EDITOR
+#else
+        if (!firstDetection) return;
+
         markerFeature.UpdateMarkerDetectors();
         MarkerDetector detector = markerFeature.MarkerDetectors[0];
         MarkerData? markerData = detector.Data.Where(d => d.MarkerPose != null).FirstOrDefault();
 
-        if (markerData.HasValue && markerData.Value.MarkerPose.HasValue)
-        { 
-            float magnitude = (aprilTag.transform.position - markerData.Value.MarkerPose.Value.position).magnitude;
-            float angle = Quaternion.Angle(aprilTag.transform.rotation, markerData.Value.MarkerPose.Value.rotation);
-            if(!firstDetection && (magnitude < 0.1 || angle < 0.1))
-                return; // no need to update on small movements
-
+        if (markerData.HasValue && markerData.Value.MarkerPose.HasValue && markerData.Value.MarkerPose.Value.position.magnitude > 0)
+        {
+            firstDetection = false;
             aprilTag.transform.position = markerData.Value.MarkerPose.Value.position;
             aprilTag.transform.rotation = markerData.Value.MarkerPose.Value.rotation;
-            // aprilTag.transform.rotation *= adjustment;
+            aprilTag.transform.Rotate(-90, 0, 0);
 
             StringBuilder builder = new();
             builder.AppendLine("Marker:" + markerData.Value.MarkerString);
             builder.AppendLine("Position: " + aprilTag.transform.position);
             builder.AppendLine("Rotation: " + aprilTag.transform.rotation);
             aprilTag.GetComponentInChildren<TextMeshPro>().text = builder.ToString();
-            
-            if(firstDetection) 
-            {
-                firstDetection = false;
-                StartCoroutine(LabelLoader.Load((int) markerData.Value.MarkerNumber, aprilTag));
-            }
+
+            StartCoroutine(LabelLoader.Load((int)markerData.Value.MarkerNumber, aprilTag));
+            markerFeature.DestroyAllMarkerDetectors();
         }
+#endif
     }
 
     private void OnDestroy()
     {
         Destroy(aprilTag);
-        markerFeature.DestroyAllMarkerDetectors();
+        // markerFeature.DestroyAllMarkerDetectors();
     }
 }
