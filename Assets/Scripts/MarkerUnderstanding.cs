@@ -78,8 +78,9 @@ public class MarkerUnderstanding : MonoBehaviour
             && markerData.Value.MarkerPose.Value.position.magnitude > 0)
         {
             aprilTag.transform.position = markerData.Value.MarkerPose.Value.position;
-            aprilTag.transform.rotation = markerData.Value.MarkerPose.Value.rotation;
-            aprilTag.transform.Rotate(-90, 0, 0);
+            // aprilTag.transform.rotation = markerData.Value.MarkerPose.Value.rotation;
+            // aprilTag.transform.Rotate(-90, 0, 0);
+            aprilTag.transform.rotation = Quaternion.Euler(0, markerData.Value.MarkerPose.Value.rotation.eulerAngles.y, 0);
 
             StringBuilder builder = new();
             builder.AppendLine("Marker:" + markerData.Value.MarkerString);
