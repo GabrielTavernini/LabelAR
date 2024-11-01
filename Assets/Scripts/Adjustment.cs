@@ -26,8 +26,8 @@ public class ExampleClass : MonoBehaviour
         _controllerActions = new MagicLeapInput.ControllerActions(_magicLeapInputs);
 
         //Subscribe to your choice of the controller events
-        _controllerActions.Trigger.started += OnTriggerClick;
-        _controllerActions.Trigger.canceled += OnTriggerRelease;
+        _controllerActions.Bumper.started += OnBumperClick;
+        _controllerActions.Bumper.canceled += OnBumperRelease;
     }
 
     void Update()
@@ -41,13 +41,13 @@ public class ExampleClass : MonoBehaviour
         }
     }
 
-    private void OnTriggerClick(InputAction.CallbackContext obj)
+    private void OnBumperClick(InputAction.CallbackContext obj)
     {   
         prevRotation = _controllerActions.PointerRotation.ReadValue<Quaternion>().eulerAngles.y;
         triggerPressed = true;
     }
 
-    private void OnTriggerRelease(InputAction.CallbackContext obj)
+    private void OnBumperRelease(InputAction.CallbackContext obj)
     {   
         triggerPressed = false;
     }
@@ -55,8 +55,8 @@ public class ExampleClass : MonoBehaviour
     // Handles the disposing all of the input events.
     void OnDestroy()
     {
-        _controllerActions.Trigger.started -= OnTriggerClick;
-        _controllerActions.Trigger.canceled -= OnTriggerRelease;
+        _controllerActions.Trigger.started -= OnBumperClick;
+        _controllerActions.Trigger.canceled -= OnBumperRelease;
         _magicLeapInputs.Dispose();
     }
 }

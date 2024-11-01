@@ -38,9 +38,9 @@ public class BuildingLoader : MonoBehaviour
         Debug.Log("Marker swiss coords: " + markerCoordinates);
         instance.buildings.transform.parent = marker.transform;
         instance.buildings.transform.localPosition = new UnityEngine.Vector3(
-            -markerCoordinates.east,
+            -(markerCoordinates.east - 2600000),
             -markerCoordinates.altitude,
-            -markerCoordinates.north
+            -(markerCoordinates.north - 1200000) 
         );
         instance.buildings.transform.localRotation = Quaternion.identity;
         

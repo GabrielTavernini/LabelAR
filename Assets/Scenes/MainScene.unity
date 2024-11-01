@@ -324,7 +324,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &791039535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,6 +382,14 @@ PrefabInstance:
       propertyPath: m_Parameters.textureScale.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5589497132288526105, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      propertyPath: m_UseForceGrab
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5589497132288526105, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      propertyPath: m_InteractionManager
+      value: 
+      objectReference: {fileID: 791039535}
     - target: {fileID: 5589497132288526110, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -17,6 +17,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using UnityEngine.XR.Interaction.Toolkit;
+using Unity.VisualScripting;
 
 public class MarkerUnderstanding : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class MarkerUnderstanding : MonoBehaviour
     {
         aprilTag = Instantiate(markerVisualPrefab);
         aprilTag.name = "Marker";
+        aprilTag.GetComponent<XRGrabInteractable>().interactionManager = interactionManager;
 
 #if !UNITY_ANDROID || UNITY_EDITOR
         aprilTag.transform.position = new Vector3(0, 0, 0);

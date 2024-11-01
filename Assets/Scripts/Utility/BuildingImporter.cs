@@ -53,7 +53,7 @@ public class BuildingImporter : EditorWindow
     private IEnumerator ImportAndSaveMeshes()
     {
         Task t = Task.Run(() => LoadDocuments());
-        while (t.IsCompleted)
+        while (!t.IsCompleted)
             yield return null;
 
         foreach (DxfDocument d in documents)
@@ -96,7 +96,11 @@ public class BuildingImporter : EditorWindow
         List<UnityEngine.Vector3> vertices = new List<UnityEngine.Vector3>();
         foreach (var vertex in polyfaceMesh.Vertexes)
         {
-            vertices.Add(new UnityEngine.Vector3((float)vertex.X, (float)vertex.Z, (float)vertex.Y));
+            vertices.Add(new UnityEngine.Vector3(
+                (float)vertex.X - 2600000, 
+                (float)vertex.Z, 
+                (float)vertex.Y - 1200000
+            ));
         }
 
         // Extract faces (as triangles or quads) from the PolyfaceMesh
