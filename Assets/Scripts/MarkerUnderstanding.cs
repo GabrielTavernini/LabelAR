@@ -25,9 +25,8 @@ public class MarkerUnderstanding : MonoBehaviour
     [SerializeField]
     private XRInteractionManager interactionManager;
     private MagicLeapMarkerUnderstandingFeature markerFeature;
-    private bool firstDetection = true;
-    static public Quaternion adjustment = Quaternion.Euler(0, 0, -90);
-    static private GameObject aprilTag;
+    static public bool firstDetection = true;
+    static public GameObject aprilTag;
 
     private void Start()
     {
@@ -78,7 +77,8 @@ public class MarkerUnderstanding : MonoBehaviour
             && markerData.Value.MarkerPose.Value.position.magnitude > 0)
         {
             aprilTag.transform.position = markerData.Value.MarkerPose.Value.position;
-            aprilTag.transform.rotation = Quaternion.Euler(0, markerData.Value.MarkerPose.Value.rotation.eulerAngles.y, 0);
+            if (firstDetection)
+                aprilTag.transform.rotation = Quaternion.Euler(0, markerData.Value.MarkerPose.Value.rotation.eulerAngles.y, 0);
 
             StringBuilder builder = new();
             builder.AppendLine("Marker:" + markerData.Value.MarkerString);
