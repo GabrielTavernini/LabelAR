@@ -117,7 +117,8 @@ public class LabelLoader : MonoBehaviour
         obj.transform.localPosition = new Vector3(label.x, label.y, label.z);
         obj.name = label.name;
 
-        obj.transform.localScale = new Vector3(10f, 10f, 10f);
+        float scale = Math.Max(Math.Min((float)(1 + 12*label.distance/1000), 50), 7);
+        obj.transform.localScale = new Vector3(scale, scale, scale);
 
         // Add a TextMesh component to display the text
         TextMeshPro textMesh = obj.AddComponent<TextMeshPro>();
