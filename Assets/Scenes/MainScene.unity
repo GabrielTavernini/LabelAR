@@ -272,6 +272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 407431672}
   - component: {fileID: 407431671}
+  - component: {fileID: 407431673}
   m_Layer: 0
   m_Name: Marker Tracker
   m_TagString: Untagged
@@ -308,6 +309,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &407431673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407431670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e67cb2985a2844f179d6f44969efac02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anchorManager: {fileID: 842956704}
 --- !u!1 &791039534
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,8 +479,29 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5589497132891496769, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 842956704}
   m_SourcePrefab: {fileID: 100100000, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+--- !u!1 &842956703 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5589497132891496769, guid: fe799b2d0a84dfe43b001b56276fd2fb, type: 3}
+  m_PrefabInstance: {fileID: 842956702}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &842956704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 842956703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728ad7fae8e460a4ba41265c7308d757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AnchorPrefab: {fileID: 8507466759726038811, guid: 5d35b051f3122403b87a97a327aba581, type: 3}
 --- !u!1 &1404673577
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,7 +512,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1404673579}
   - component: {fileID: 1404673578}
-  - component: {fileID: 1404673580}
   m_Layer: 0
   m_Name: BuildingLoader
   m_TagString: Untagged
@@ -497,6 +531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c12cf278a381417d9e1ec8bc7676d79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  transparentShader: {fileID: 15300, guid: 0000000000000000f000000000000000, type: 0}
   material: {fileID: 2100000, guid: f092af6c3c6694b05adafa8fbb09ceb8, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 48e9eea92ace2408e95c7b8e089d28dd, type: 2}
   highlightMaterial2: {fileID: 2100000, guid: 7e8efcf58a4ac441d9d286b4ce95aa42, type: 2}
@@ -515,18 +550,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1404673580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1404673577}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e67cb2985a2844f179d6f44969efac02, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1627138995
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,7 +581,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _occlusionSource: -1
   _nearRange: 0.3
-  _farRange: 0.9
+  _farRange: 7.5
 --- !u!4 &1627138997
 Transform:
   m_ObjectHideFlags: 0

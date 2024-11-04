@@ -18,4 +18,5 @@
   <uses-permission android:name="com.magicleap.permission.VOICE_INPUT" />
   <uses-permission android:name="com.magicleap.permission.HAND_TRACKING" />
   <uses-permission android:name="com.magicleap.permission.PUPIL_SIZE" />
+  <uses-permission android:name="com.magicleap.permission.SPACE_MANAGER" />
 </manifest>

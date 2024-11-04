@@ -27,6 +27,7 @@ public class Response
 {
     public Coordinates coordinates;
     public List<Label> labels;
+    public HashSet<string> buildings;
 }
 
 public class FaceCamera : MonoBehaviour
@@ -56,6 +57,8 @@ public class LabelLoader : MonoBehaviour
     private GameObject labels;
 
     static private LabelLoader instance;
+
+    static public Response response;
 
     void Start()
     {
@@ -88,17 +91,15 @@ public class LabelLoader : MonoBehaviour
             else
             {
                 // Parse the JSON response
-                string jsonResponse = request.downloadHandler.text;
                 // string jsonResponse = "{\"coordinates\":{\"east\":2683740.369,\"north\":1250632.114,\"altitude\":472.775},\"labels\":[{\"name\":\"WG_TEST\",\"distance\":10.26,\"x\":20,\"y\":0,\"z\":0},{\"name\":\"Lake Zurich\",\"distance\":1461.26,\"x\":-278.9903675355017,\"y\":-41.0,\"z\":-1434.4294453682378},{\"name\":\"Zurich Hauptbahnhof\",\"distance\":441.97,\"x\":-423.6082664085552,\"y\":-39.0,\"z\":126.13132119132206},{\"name\":\"HG\",\"distance\":102.88,\"x\":102.8826160794124,\"y\":48.0,\"z\":-0.7712020566686988},{\"name\":\"Grossm\u00FCnster\",\"distance\":733.62,\"x\":-207.2370368060656,\"y\":23.0,\"z\":-703.7734117538203},{\"name\":\"Fraumunster\",\"distance\":848.76,\"x\":-383.7784227631055,\"y\":23.0,\"z\":-757.0725818965584}]}";
+                string jsonResponse = request.downloadHandler.text;
                 Debug.Log("Labels received from server: " + jsonResponse);
 
-
-                //List<Label> response = JsonConvert.DeserializeObject<List<Label>>(jsonResponse);
-                Response response = JsonConvert.DeserializeObject<Response>(jsonResponse);
+                response = JsonConvert.DeserializeObject<Response>(jsonResponse);
 
                 // Start coroutines to spawn buildings
                 Debug.Log("Start spawning buildings!");
-                instance.StartCoroutine(BuildingLoader.GenerateBuildings(response.coordinates, marker));
+                instance.StartCoroutine(BuildingLoader.GenerateBuildings(marker));
 
                 Debug.Log("Spawning " + response.labels.Count + " labels!");
                 // Spawn game objects with text at each position
@@ -111,7 +112,7 @@ public class LabelLoader : MonoBehaviour
     static void SpawnObjectAtPosition(Label label, GameObject marker)
     {
         Debug.Log("Spawning label " + label.name + " at " + label.x + " " + label.y + " " + label.z);
-        GameObject obj = Instantiate(instance.prefab);
+        GameObject obj = new GameObject(); // Instantiate(instance.prefab);
         obj.transform.parent = instance.labels.transform;
         obj.transform.localPosition = new Vector3(label.x, label.y, label.z);
         obj.name = label.name;

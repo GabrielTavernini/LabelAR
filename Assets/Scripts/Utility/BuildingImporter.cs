@@ -83,8 +83,11 @@ public class BuildingImporter : EditorWindow
     {
         Log("Loading " + doc.Entities.PolyfaceMeshes.Count() + " meshes.");
         IEnumerator<PolyfaceMesh> e = doc.Entities.PolyfaceMeshes.GetEnumerator();
-        while (e.MoveNext())
-            yield return SpawnPolyfaceMesh(e.Current);
+        int count = 0;
+        while (e.MoveNext()) {
+            SpawnPolyfaceMesh(e.Current);
+            if(count++ % 20 == 0) yield return null;
+        }
         Log("Done loading " + doc.Entities.PolyfaceMeshes.Count() + " meshes.");
     }
 

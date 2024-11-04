@@ -6,15 +6,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using netDxf;
 using netDxf.Entities;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.XR;
 
 public class BuildingLoader : MonoBehaviour
 {
+    [SerializeField]
+    private Shader transparentShader;
 
     [SerializeField]
     private Material material;
+    private Shader materialShader;
 
     [SerializeField]
     private Material highlightMaterial;
@@ -30,11 +35,22 @@ public class BuildingLoader : MonoBehaviour
     void Start()
     {
         buildings = new GameObject("Buildings");
+        materialShader = material.shader;
         instance = this;
     }
 
-    public static IEnumerator GenerateBuildings(Coordinates markerCoordinates, GameObject marker)
+    public static void ChangeShader(bool transparent) {
+        if(instance == null) return; // ignore calls before class is setup
+
+        if(transparent)
+            instance.material.shader = instance.transparentShader;
+        else
+            instance.material.shader = instance.materialShader;
+    }
+  
+    public static IEnumerator GenerateBuildings(GameObject marker)
     {
+        Coordinates markerCoordinates = LabelLoader.response.coordinates;
         Debug.Log("Marker swiss coords: " + markerCoordinates);
         instance.buildings.transform.parent = marker.transform;
         instance.buildings.transform.localPosition = new UnityEngine.Vector3(
@@ -66,12 +82,9 @@ public class BuildingLoader : MonoBehaviour
         meshRenderer.receiveShadows = false;
 
         meshFilter.mesh = mesh;
-        if (Handle == "5BEA1")
+        meshRenderer.material = material;
+        if(LabelLoader.response.buildings.Contains(Handle))
             meshRenderer.material = highlightMaterial;
-        else if (Handle == "1CD66")
-            meshRenderer.material = highlightMaterial2;
-        else
-            meshRenderer.material = material;
 
         return polyfaceMeshObj;
     }

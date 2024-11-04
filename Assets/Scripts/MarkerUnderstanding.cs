@@ -25,12 +25,14 @@ public class MarkerUnderstanding : MonoBehaviour
     private GameObject markerVisualPrefab;
     [SerializeField]
     private XRInteractionManager interactionManager;
-    private MagicLeapMarkerUnderstandingFeature markerFeature;
+    static private MagicLeapMarkerUnderstandingFeature markerFeature;
     static public bool firstDetection = true;
     static public GameObject aprilTag;
+    static private MarkerUnderstanding instance;
 
     private void Start()
-    {
+    {   
+        instance = this;
         aprilTag = Instantiate(markerVisualPrefab);
         aprilTag.name = "Marker";
         aprilTag.GetComponent<XRGrabInteractable>().interactionManager = interactionManager;
@@ -66,34 +68,59 @@ public class MarkerUnderstanding : MonoBehaviour
         markerFeature.CreateMarkerDetector(markerDetectorSettings);
     }
 
+    public static void SetAprilCode(int code, Vector3 pos, Quaternion rot)
+    {
+        aprilTag.transform.position = pos;
+        aprilTag.transform.rotation = Quaternion.Euler(0, rot.eulerAngles.y, 0);
+
+        StringBuilder builder = new();
+        builder.AppendLine("Marker:" + code);
+        builder.AppendLine("Position: " + aprilTag.transform.position);
+        builder.AppendLine("Rotation: " + aprilTag.transform.rotation);
+        aprilTag.GetComponentInChildren<TextMeshPro>().text = builder.ToString();
+
+        if(firstDetection) {
+            firstDetection = false;
+            instance.StartCoroutine(LabelLoader.Load(code, aprilTag));
+        }
+    }
+
+    public static void FreezeAprilCode() {
+        aprilTag.GetComponent<XRGrabInteractable>().interactionManager = null;
+    }
+
+    public static void UnfreezeAprilCode() {
+        if(instance == null) return; // ignore calls before class is setup
+        aprilTag.GetComponent<XRGrabInteractable>().interactionManager = instance.interactionManager;
+    }
+
 
     private void Update()
     {
 #if !UNITY_ANDROID || UNITY_EDITOR
 #else
         markerFeature.UpdateMarkerDetectors();
+        if(markerFeature.MarkerDetectors.Count == 0) return;
+
         MarkerDetector detector = markerFeature.MarkerDetectors[0];
         MarkerData? markerData = detector.Data.Where(d => d.MarkerPose != null).FirstOrDefault();
 
         if (markerData.HasValue && markerData.Value.MarkerPose.HasValue 
             && markerData.Value.MarkerPose.Value.position.magnitude > 0)
         {
-            aprilTag.transform.position = markerData.Value.MarkerPose.Value.position;
-            if (firstDetection)
-                aprilTag.transform.rotation = Quaternion.Euler(0, markerData.Value.MarkerPose.Value.rotation.eulerAngles.y, 0);
-
-            StringBuilder builder = new();
-            builder.AppendLine("Marker:" + markerData.Value.MarkerString);
-            builder.AppendLine("Position: " + aprilTag.transform.position);
-            builder.AppendLine("Rotation: " + aprilTag.transform.rotation);
-            aprilTag.GetComponentInChildren<TextMeshPro>().text = builder.ToString();
-
-            if (firstDetection) {
-                firstDetection = false;
-                StartCoroutine(LabelLoader.Load((int)markerData.Value.MarkerNumber, aprilTag));
-            }
+            SetAprilCode(
+                (int) markerData.Value.MarkerNumber, 
+                markerData.Value.MarkerPose.Value.position, 
+                markerData.Value.MarkerPose.Value.rotation
+            );
+            MarkerUnderstanding.Stop();
         }
 #endif
+    }
+
+    static public void Stop()
+    {
+        markerFeature.DestroyAllMarkerDetectors();
     }
 
     private void OnDestroy()
