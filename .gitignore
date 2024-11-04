@@ -2,6 +2,7 @@
 LabelAR_BurstDebugInformation_DoNotShip/
 /[Aa]ssets/Resources/Buildings/*
 /[Aa]ssets/Resources/terrain*
+/[Aa]ssets/[Ss]treamingAssets/*.xyz
 /[Aa]ssets/[Ss]treamingAssets/*.dxf
 /[Aa]ssets/[Ss]treamingAssets/*.meta
 

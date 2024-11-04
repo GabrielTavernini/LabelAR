@@ -23,7 +23,7 @@ public class BuildingImporter : EditorWindow
     [MenuItem("Tools/Import and Save Buildings")]
     public static void ShowWindow()
     {
-        var window = GetWindow<BuildingImporter>("Mesh Importer");
+        var window = GetWindow<BuildingImporter>("Buildings Mesh Importer");
         window.minSize = new UnityEngine.Vector2(600, 400);
     }
 
