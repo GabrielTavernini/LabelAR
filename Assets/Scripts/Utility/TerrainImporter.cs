@@ -75,74 +75,98 @@ public class TerrainImporter : EditorWindow
 
     private IEnumerator CreateMeshFromXYZ()
     {
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
-        
-        int stepSize = 10;
-        int gridLine = -1;
-        float prevZ = -1;
+        List<List<Vector3>> point_grid = new();
+        List<int> triangles = new();
+        int vertex_count = 0;
 
-        float currX_start = -1;
-        float currX_end = -1;
-        int currI_start = -1;
-        int currI_end = -1;
-
-        float prevX_start = -1;
-        float prevX_end = -1;
-        int prevI_start = -1;
-        int prevI_end = -1;
+        // Read the first line to determine the order of x, y, z
+        string[] order = lines[0].Trim().Split(' ');
+        int xIndex = Array.IndexOf(order, "x");
+        int yIndex = Array.IndexOf(order, "y");
+        int zIndex = Array.IndexOf(order, "z");
 
         foreach (string line in lines.Skip(1))
         {
             string[] splitLine = line.Trim().Split(' ');
-            float.TryParse(splitLine[0], out float x);
-            float.TryParse(splitLine[1], out float y);
-            float.TryParse(splitLine[2], out float z);
+            float.TryParse(splitLine[xIndex], out float x);
+            float.TryParse(splitLine[yIndex], out float y);
+            float.TryParse(splitLine[zIndex], out float z);
 
-            int currentIndex = vertices.Count();
-            if(prevZ != z) {
-                prevX_end = currX_end;
-                prevX_start = currX_start;
-                currX_start = x;
-
-                prevI_end = currI_end;
-                prevI_start = currI_start;
-                currI_start = currentIndex;
-
-                prevZ = z;
-                gridLine++;
-                // Log($"V{currentIndex}: {currX_start.ToString()} - {currX_end.ToString()}");
+            if (point_grid.Count() == 0 || point_grid.Last()[0].z != z)
+            {
+                point_grid.Add(new List<Vector3>{new Vector3(x, y, z)});
+            }
+            else
+            {
+                point_grid.Last().Add(new Vector3(x, y, z));
             }
 
-            if(x >= prevX_start && x <= prevX_end) {
-                // Log($"V{currentIndex}: {prevI_start.ToString()}");
-                int downIndex = prevI_start + (currentIndex - currI_start);
+            if(++vertex_count % 500 == 0) yield return null;
+        }
+        Log(point_grid.ToString());
 
-                if(x != prevX_start && currentIndex != currI_start) {
-                    // first node above prev line
-                    triangles.Add(currentIndex - 1);
-                    triangles.Add(currentIndex);
-                    triangles.Add(downIndex);
-                    // Log($"A: {currentIndex} - {currentIndex-1} - {downIndex}");
-                }
+        for (int i = 0, currOffset = 0; i < point_grid.Count() - 1; i++)
+        {
+            var curr = point_grid[i];
+            var next = point_grid[i + 1];
+            int currJ = 0, nextJ = 0;
+            int nextOffset = currOffset + point_grid[i].Count();
 
-                if(x != prevX_end) {
-                    // last node above prev line
-                    triangles.Add(downIndex + 1);
-                    triangles.Add(downIndex);
-                    triangles.Add(currentIndex);
-                    // Log($"B: {currentIndex} - {downIndex} - {downIndex+1}");
-                }
+            // ... * * ...
+            //       * ...
+            // connect all start curr to first next
+            for (; curr[currJ].x < next[0].x; currJ++)
+            {
+                int a = currOffset + currJ, b = currOffset + currJ + 1, c = nextOffset;
+                triangles.AddRange(new int[] { a, b, c });
             }
-            currX_end = x;
-            currI_end = currentIndex;
-            vertices.Add(new Vector3(x, y, z));
 
-            if(vertices.Count() % 500 == 0) yield return null;
+            //       * ...
+            // ... * * ...
+            // connect all start next to first curr
+            for (; curr[0].x > next[nextJ].x; nextJ++)
+            {
+                int a = currOffset, b = nextOffset + nextJ, c = nextOffset + nextJ + 1;
+                triangles.AddRange(new int[] { a, b, c });
+            }
+
+            // ... * * ...
+            // ... * * ...
+            // connect if currJ and nextJ both have a next point
+            for (; currJ < curr.Count() - 1 & nextJ < next.Count() - 1; currJ++, nextJ++)
+            {
+                int a1 = currOffset + currJ, b1 = currOffset + currJ + 1, c1 = nextOffset + nextJ;
+                triangles.AddRange(new int[] { a1, b1, c1 });
+
+                int a2 = currOffset + currJ + 1, b2 = nextOffset + nextJ, c2 = nextOffset + nextJ + 1;
+                triangles.AddRange(new int[] { a2, b2, c2 });
+
+                if(currOffset + currJ % 500 == 0) yield return null;
+            }
+
+            //   ... * * ...
+            //   ... * 
+            // connect all end curr to last next
+            for (; currJ < curr.Count() - 1; currJ++)
+            {
+                int a = currOffset + currJ, b = currOffset + currJ + 1, c = nextOffset + nextJ;
+                triangles.AddRange(new int[] { a, b, c });
+            }
+    
+            //   ... * 
+            //   ... * * ...
+            // connect all end next to last curr
+            for (; nextJ < next.Count() - 1; nextJ++)
+            {
+                int a = currOffset + currJ, b = nextOffset + nextJ, c = nextOffset + nextJ + 1;
+                triangles.AddRange(new int[] { a, b, c });
+            }
+
+            currOffset = nextOffset;
         }
 
         Mesh mesh = new Mesh();
-        mesh.vertices = vertices.ToArray();
+        mesh.vertices = point_grid.SelectMany(x => x).ToArray();
         mesh.triangles = triangles.ToArray();
         
         mesh.RecalculateNormals();
