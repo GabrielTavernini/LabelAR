@@ -99,7 +99,7 @@ public class LabelLoader : MonoBehaviour
 
                 // Start coroutines to spawn buildings
                 Debug.Log("Start spawning buildings!");
-                instance.StartCoroutine(BuildingLoader.GenerateBuildings(marker));
+                instance.StartCoroutine(WorldLoader.GenerateWorld(marker));
 
                 Debug.Log("Spawning " + response.labels.Count + " labels!");
                 // Spawn game objects with text at each position

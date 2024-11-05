@@ -94,7 +94,7 @@ public class Adjustment : MonoBehaviour
         adjustmentMode = !adjustmentMode;
         Debug.Log("Toggled adjustment mode to " + adjustmentMode);
         
-        BuildingLoader.ChangeShader(!adjustmentMode);
+        WorldLoader.ChangeShader(!adjustmentMode);
         if(adjustmentMode)
             MarkerUnderstanding.UnfreezeAprilCode();
         else

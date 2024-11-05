@@ -513,7 +513,7 @@ GameObject:
   - component: {fileID: 1404673579}
   - component: {fileID: 1404673578}
   m_Layer: 0
-  m_Name: BuildingLoader
+  m_Name: WorldLoader
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

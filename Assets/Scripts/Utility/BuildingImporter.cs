@@ -100,9 +100,9 @@ public class BuildingImporter : EditorWindow
         foreach (var vertex in polyfaceMesh.Vertexes)
         {
             vertices.Add(new UnityEngine.Vector3(
-                (float)vertex.X - 2600000, 
+                (float)vertex.X - WorldLoader.X_offset, 
                 (float)vertex.Z, 
-                (float)vertex.Y - 1200000
+                (float)vertex.Y - WorldLoader.Z_offset
             ));
         }
 

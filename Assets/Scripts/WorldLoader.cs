@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.XR;
 
-public class BuildingLoader : MonoBehaviour
+public class WorldLoader : MonoBehaviour
 {
     [SerializeField]
     private Shader transparentShader;
@@ -29,7 +29,10 @@ public class BuildingLoader : MonoBehaviour
 
     private GameObject buildings;
 
-    private static BuildingLoader instance;
+    private static WorldLoader instance;
+
+    public static readonly int X_offset = 2600000;
+    public static readonly int Z_offset = 1200000;
 
     // Start is called before the first frame update
     void Start()
@@ -48,15 +51,15 @@ public class BuildingLoader : MonoBehaviour
             instance.material.shader = instance.materialShader;
     }
   
-    public static IEnumerator GenerateBuildings(GameObject marker)
+    public static IEnumerator GenerateWorld(GameObject marker)
     {
         Coordinates markerCoordinates = LabelLoader.response.coordinates;
         Debug.Log("Marker swiss coords: " + markerCoordinates);
         instance.buildings.transform.parent = marker.transform;
         instance.buildings.transform.localPosition = new UnityEngine.Vector3(
-            -(markerCoordinates.east - 2600000),
+            -(markerCoordinates.east - X_offset),
             -markerCoordinates.altitude,
-            -(markerCoordinates.north - 1200000) 
+            -(markerCoordinates.north - Z_offset) 
         );
         instance.buildings.transform.localRotation = Quaternion.identity;
         
@@ -64,6 +67,10 @@ public class BuildingLoader : MonoBehaviour
         foreach (var mesh in Resources.LoadAll<UnityEngine.Mesh>("Buildings/")) {
             instance.SpawnMesh(mesh);
             if(counter++ % 500 == 0) yield return null;
+        }
+
+        foreach (var mesh in Resources.LoadAll<UnityEngine.Mesh>("Terrain/")) {
+            yield return instance.SpawnMesh(mesh);
         }
     }
 
