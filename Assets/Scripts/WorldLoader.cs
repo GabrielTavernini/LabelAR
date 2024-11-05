@@ -69,6 +69,7 @@ public class WorldLoader : MonoBehaviour
             if(counter++ % 500 == 0) yield return null;
         }
 
+        yield return null;
         foreach (var mesh in Resources.LoadAll<UnityEngine.Mesh>("Terrain/")) {
             yield return instance.SpawnMesh(mesh);
         }
