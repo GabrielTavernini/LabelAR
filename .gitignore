@@ -1,7 +1,9 @@
 .DS_store
 LabelAR_BurstDebugInformation_DoNotShip/
-/[Aa]ssets/Resources/Buildings/*
-/[Aa]ssets/Resources/terrain*
+/[Aa]ssets/Resources/Buildings/*.asset
+/[Aa]ssets/Resources/Buildings/*.meta
+/[Aa]ssets/Resources/Terrain/*.asset
+/[Aa]ssets/Resources/Terrain/*.meta
 /[Aa]ssets/[Ss]treamingAssets/*.xyz
 /[Aa]ssets/[Ss]treamingAssets/*.dxf
 /[Aa]ssets/[Ss]treamingAssets/*.meta
