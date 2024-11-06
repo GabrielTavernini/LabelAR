@@ -38,7 +38,11 @@ public class Adjustment : MonoBehaviour
     private List<ARAnchor> activeAnchors = new();   
     private readonly List<ARAnchor> activeAnchorsStored = new();
 
-    IEnumerator Start()
+    private void Start() {
+
+    }
+
+    public IEnumerator StartSpatialAnchors()
     {
         // Initialize the InputActionAsset
         _magicLeapInputs = new MagicLeapInput();

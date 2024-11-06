@@ -71,12 +71,15 @@ public class WorldLoader : MonoBehaviour
 
         yield return null;
         foreach (var mesh in Resources.LoadAll<UnityEngine.Mesh>("Terrain/")) {
-            yield return instance.SpawnMesh(mesh);
+            yield return instance.SpawnMesh(mesh, true);
         }
     }
 
-    GameObject SpawnMesh(UnityEngine.Mesh mesh)
+    GameObject SpawnMesh(UnityEngine.Mesh mesh, bool ignoreRadius = false)
     {
+        if(!ignoreRadius && UnityEngine.Vector3.Distance(mesh.bounds.center + instance.buildings.transform.localPosition, MarkerUnderstanding.aprilTag.transform.position) > 1000)
+            return null;
+
         string Handle = mesh.name;
         GameObject polyfaceMeshObj = new GameObject(Handle);
         polyfaceMeshObj.transform.parent = buildings.transform;
