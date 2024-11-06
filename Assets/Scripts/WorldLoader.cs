@@ -1,89 +1,56 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using netDxf;
-using netDxf.Entities;
-using Unity.Mathematics;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.XR;
 
-public class WorldLoader : MonoBehaviour
-{
-    [SerializeField]
-    private Shader transparentShader;
-
-    [SerializeField]
-    private Material material;
-    private Shader materialShader;
-
-    [SerializeField]
+public class WorldLoader
+{   
     private Material highlightMaterial;
-
-    [SerializeField]
-    private Material highlightMaterial2;
+    private Material material;
 
     private GameObject buildings;
-
-    private static WorldLoader instance;
 
     public static readonly int X_offset = 2600000;
     public static readonly int Z_offset = 1200000;
 
-    // Start is called before the first frame update
-    void Start()
+    public WorldLoader(GameObject buildings, Material highlightMaterial, Material material)
     {
-        buildings = new GameObject("Buildings");
-        materialShader = material.shader;
-        instance = this;
+        this.buildings = buildings;
+        this.highlightMaterial = highlightMaterial;
+        this.material = material;
     }
 
-    public static void ChangeShader(bool transparent) {
-        if(instance == null) return; // ignore calls before class is setup
+    // public void ChangeShader(bool transparent) {
+    //     if(instance == null) return; // ignore calls before class is setup
 
-        if(transparent)
-            instance.material.shader = instance.transparentShader;
-        else
-            instance.material.shader = instance.materialShader;
-    }
+    //     if(transparent)
+    //         instance.material.shader = instance.transparentShader;
+    //     else
+    //         instance.material.shader = instance.materialShader;
+    // }
   
-    public static IEnumerator GenerateWorld(GameObject marker)
+    public IEnumerator GenerateWorld(HashSet<string> highlightedBuildings)
     {
-        Coordinates markerCoordinates = LabelLoader.response.coordinates;
-        Debug.Log("Marker swiss coords: " + markerCoordinates);
-        instance.buildings.transform.parent = marker.transform;
-        instance.buildings.transform.localPosition = new UnityEngine.Vector3(
-            -(markerCoordinates.east - X_offset),
-            -markerCoordinates.altitude,
-            -(markerCoordinates.north - Z_offset) 
-        );
-        instance.buildings.transform.localRotation = Quaternion.identity;
-        
         int counter = 0;
-        foreach (var mesh in Resources.LoadAll<UnityEngine.Mesh>("Buildings/")) {
-            instance.SpawnMesh(mesh);
+        foreach (var mesh in Resources.LoadAll<Mesh>("Buildings/")) {
+            SpawnMesh(mesh, highlight:highlightedBuildings.Contains(mesh.name));
             if(counter++ % 500 == 0) yield return null;
         }
 
         yield return null;
-        foreach (var mesh in Resources.LoadAll<UnityEngine.Mesh>("Terrain/")) {
-            yield return instance.SpawnMesh(mesh, true);
+        foreach (var mesh in Resources.LoadAll<Mesh>("Terrain/")) {
+            yield return SpawnMesh(mesh, ignoreRadius:true);
         }
     }
 
-    GameObject SpawnMesh(UnityEngine.Mesh mesh, bool ignoreRadius = false)
+    GameObject SpawnMesh(Mesh mesh, bool highlight = false, bool ignoreRadius = false)
     {
-        if(!ignoreRadius && UnityEngine.Vector3.Distance(mesh.bounds.center + instance.buildings.transform.localPosition, MarkerUnderstanding.aprilTag.transform.position) > 1000)
-            return null;
+        // if(!ignoreRadius && Vector3.Distance(mesh.bounds.center + buildings.transform.localPosition, MarkerUnderstanding.aprilTag.transform.position) > 1000)
+        //     return null;
 
         string Handle = mesh.name;
         GameObject polyfaceMeshObj = new GameObject(Handle);
         polyfaceMeshObj.transform.parent = buildings.transform;
-        polyfaceMeshObj.transform.localPosition = new UnityEngine.Vector3();
+        polyfaceMeshObj.transform.localPosition = new Vector3();
         polyfaceMeshObj.transform.localRotation = Quaternion.identity;
 
         // Add MeshFilter and MeshRenderer components
@@ -93,16 +60,8 @@ public class WorldLoader : MonoBehaviour
         meshRenderer.receiveShadows = false;
 
         meshFilter.mesh = mesh;
-        meshRenderer.material = material;
-        if(LabelLoader.response.buildings.Contains(Handle))
-            meshRenderer.material = highlightMaterial;
+        meshRenderer.material = highlight ? highlightMaterial : material;
 
         return polyfaceMeshObj;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

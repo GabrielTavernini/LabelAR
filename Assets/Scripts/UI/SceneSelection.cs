@@ -11,14 +11,10 @@ using UnityEngine.XR.OpenXR.NativeTypes;
 
 public class SceneSelection : MonoBehaviour
 {
-    [SerializeField]
-    private TMP_Dropdown dropdown;
-    [SerializeField]
-    private Button initButton;
-    [SerializeField]
-    private Button openButton;
-    [SerializeField]
-    private Adjustment adjustmentInstance;
+    [SerializeField] private TMP_Dropdown dropdown;
+    [SerializeField] private Button openButton;
+    [SerializeField] private Orchestrator orchestrator;
+
     private LocalizationMap[] maps;
     private MagicLeapLocalizationMapFeature localizationMapFeature;
 
@@ -34,20 +30,16 @@ public class SceneSelection : MonoBehaviour
             foreach(LocalizationMap map in maps)
                 dropdown.options.Add(new TMP_Dropdown.OptionData(map.Name));
 
-        initButton.onClick.AddListener(initClick);
         openButton.onClick.AddListener(openClick);
-    }
-
-    private void initClick() {
-        
     }
 
     private void openClick() {
         Debug.Log($"Request localization in: {maps[dropdown.value].MapUUID}");
         XrResult result = localizationMapFeature.RequestMapLocalization(maps[dropdown.value].MapUUID);
         Debug.Log($"Localize request result: {result}");
-        this.gameObject.SetActive(false);        
-        adjustmentInstance.StartCoroutine(adjustmentInstance.StartSpatialAnchors());
+        gameObject.SetActive(false);
+        // adjustmentInstance.StartCoroutine(adjustmentInstance.StartSpatialAnchors());
+        orchestrator.StartCoroutine(orchestrator.Open(maps[dropdown.value].Name));
     }
 
     // Update is called once per frame
