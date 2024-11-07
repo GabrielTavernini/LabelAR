@@ -18,7 +18,7 @@ public class SceneSelection : MonoBehaviour
     private LocalizationMap[] maps;
     private MagicLeapLocalizationMapFeature localizationMapFeature;
 
-    // Start is called before the first frame update
+
     void Start()
     {
         localizationMapFeature = OpenXRSettings.Instance.GetFeature<MagicLeapLocalizationMapFeature>();
@@ -37,8 +37,7 @@ public class SceneSelection : MonoBehaviour
         Debug.Log($"Request localization in: {maps[dropdown.value].MapUUID}");
         XrResult result = localizationMapFeature.RequestMapLocalization(maps[dropdown.value].MapUUID);
         Debug.Log($"Localize request result: {result}");
-        gameObject.SetActive(false);
-        // adjustmentInstance.StartCoroutine(adjustmentInstance.StartSpatialAnchors());
+
         orchestrator.StartCoroutine(orchestrator.Open(maps[dropdown.value].Name));
     }
 

@@ -18,15 +18,6 @@ public class WorldLoader
         this.highlightMaterial = highlightMaterial;
         this.material = material;
     }
-
-    // public void ChangeShader(bool transparent) {
-    //     if(instance == null) return; // ignore calls before class is setup
-
-    //     if(transparent)
-    //         instance.material.shader = instance.transparentShader;
-    //     else
-    //         instance.material.shader = instance.materialShader;
-    // }
   
     public IEnumerator GenerateWorld(HashSet<string> highlightedBuildings)
     {

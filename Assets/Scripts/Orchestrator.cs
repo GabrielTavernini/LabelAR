@@ -10,32 +10,25 @@ using UnityEngine.XR.OpenXR;
 
 public class Orchestrator : MonoBehaviour
 {
+    [SerializeField] private GameObject sceneSelection;
+    [SerializeField] private GameObject viewSettings;
+
+
     [SerializeField] private GameObject markerVisualPrefab;
-
     [SerializeField] private XRInteractionManager interactionManager;
-
-    [SerializeField] private Shader viewShader;
-
-    [SerializeField] private Material editMaterial;
-
-    [SerializeField] private Material labelMaterial;
-
+    [SerializeField] private Shader transparentShader;
+    public Material material; // material for non-labeled buildings
+    public Material highlightMaterial; // material for labeled buildings
     [SerializeField] private Material textMaterial;
-
     [SerializeField] private ARAnchorManager anchorManager;
-
     [SerializeField] private bool UseVisibility;
 
     private SpatialAnchors spatialAnchors;
-
     private WorldLoader worldLoader;
-
     private LabelLoader labelLoader;
 
     private GameObject marker;
-
     private GameObject labels;
-
     private GameObject buildings;
 
 
@@ -45,41 +38,73 @@ public class Orchestrator : MonoBehaviour
         buildings = new GameObject("buildings");
 
         spatialAnchors = new SpatialAnchors(anchorManager);
-        worldLoader = new WorldLoader(buildings, labelMaterial, editMaterial);
+        worldLoader = new WorldLoader(buildings, highlightMaterial, material);
         labelLoader = new LabelLoader(labels, textMaterial);
     }
 
-    public IEnumerator Open(string mapName)
+    public void SetAdjustmentMode(bool value)
     {
-        yield return spatialAnchors.Start();
-
-        marker = Instantiate(markerVisualPrefab);
-        marker.name = "Marker";
-
-        if (spatialAnchors.anchorFound)
+        Debug.Log("Adjustment mode: " + value);
+        if (value)
         {
-            Debug.Log("Anchor found. Loading aligned map and labels.");
+            // Put the Origin Marker in a default position
+            // TODO: More principled way
+            marker.transform.parent = null;
+            marker.transform.position = new Vector3(0, 0, 1);
+            marker.transform.rotation = Quaternion.Euler(new Vector3(0, 120, 0));
+
+            // Enable Adjustment interaction on the marker
+            Adjustment adjustment = marker.AddComponent<Adjustment>();
+            adjustment.orchestrator = this;
+            marker.GetComponent<XRGrabInteractable>().interactionManager = interactionManager;
+
+            // Disable the ViewSettings UI and set the material to opaque
+            viewSettings.SetActive(false);
+            MaterialHelper.SetSolid(material);
+        }
+        else
+        {
+            // Align the Origin Marker with the spatial anchor
             marker.transform.parent = spatialAnchors.anchor.transform;
             marker.transform.localPosition = new Vector3();
             marker.transform.localRotation = Quaternion.identity;
 
+            // Disable Adjustment interaction on the marker
+            Destroy(marker.GetComponent<Adjustment>());
             marker.GetComponent<XRGrabInteractable>().interactionManager = null;
-            editMaterial.shader = viewShader;
+
+            // Enable the ViewSettings UI
+            viewSettings.SetActive(true);
+            MaterialHelper.SetFullyTransparent(material, transparentShader);
+        }
+    }
+
+    public IEnumerator Open(string mapName)
+    {
+        // Disable the SceneSelection UI and instantiate the Origin Marker
+        marker = Instantiate(markerVisualPrefab);
+        Debug.Log("Marker instantiated: " + (marker != null));
+        marker.name = "Marker";
+        sceneSelection.SetActive(false);
+
+        // Start the spatial anchors subsystem
+        yield return spatialAnchors.Start(mapName);
+
+        if (spatialAnchors.anchorFound)
+        {
+            Debug.Log("Anchor found. Loading aligned map and labels.");
+            SetAdjustmentMode(false);
         }
         else
         {
             Debug.Log("Anchor NOT found. Entering alignment mode.");
-            marker.transform.position = new Vector3(0, 0, 1);
-            marker.transform.rotation = Quaternion.Euler(new Vector3(0, 120, 0));
-
-            marker.AddComponent<Adjustment>();
-            marker.GetComponent<XRGrabInteractable>().interactionManager = interactionManager;
+            SetAdjustmentMode(true);
         }
 
-        yield return Load(0);
+        yield return LoadAssets(0);
     }
 
-    private IEnumerator Load(int code)
+    private IEnumerator LoadAssets(int code)
     {
         StringBuilder builder = new StringBuilder();
         builder.AppendLine("Spawning labels starting from");
@@ -91,6 +116,9 @@ public class Orchestrator : MonoBehaviour
         yield return Request.Load(code);
         SpawnWorld();
         SpawnLabels();
+
+        GameObject.Find("SceneSelection").SetActive(false);
+        GameObject.Find("ViewSettings").SetActive(true);
     }
 
     private void SpawnWorld()
@@ -117,6 +145,17 @@ public class Orchestrator : MonoBehaviour
         labels.transform.localRotation = Quaternion.identity;
 
         StartCoroutine(labelLoader.SpawnLabels(Request.response));
+    }
+
+    public IEnumerator SaveSpatialAnchor(Pose pose)
+    {
+        // Instantiate the new anchor object here, then pass it to SpatialAnchors
+        GameObject newAnchor = Instantiate(
+            spatialAnchors.anchorManager.anchorPrefab, pose.position, pose.rotation);
+        yield return spatialAnchors.CreateAnchor(newAnchor);
+
+        // Once the anchor is saved, disable the Adjustment mode
+        SetAdjustmentMode(false);
     }
 
     void OnDestroy()

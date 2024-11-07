@@ -12,7 +12,7 @@ using UnityEngine.XR.OpenXR.NativeTypes;
 
 public class SpatialAnchors
 {
-    private ARAnchorManager anchorManager;
+    public ARAnchorManager anchorManager { get; }
     private MagicLeapSpatialAnchorsStorageFeature anchorStorageFeature;
     private MagicLeapLocalizationMapFeature mapFeature;
     private MLXrAnchorSubsystem activeSubsystem;
@@ -27,7 +27,7 @@ public class SpatialAnchors
         this.anchorManager = anchorManager;
     }
 
-    public IEnumerator Start()
+    public IEnumerator Start(string spaceName)
     {
         Debug.Log("Starting spatial anchor subsystem!");
         yield return new WaitUntil(AreSubsystemsLoaded);
@@ -57,8 +57,11 @@ public class SpatialAnchors
         return activeSubsystem != null;
     }
 
-    private IEnumerator CreateAnchor(ARAnchor toPublish)
+    public IEnumerator CreateAnchor(GameObject newAnchor)
     {
+        ARAnchor toPublish = newAnchor.AddComponent<ARAnchor>();
+        activeAnchors.Add(toPublish);
+
         while (toPublish.trackingState != TrackingState.Tracking)
             yield return null;
 

@@ -26,7 +26,7 @@ public class Response
     public Coordinates coordinates;
     public List<Label> labels;
     public HashSet<string> buildings;
-    public int visibility;
+    public float visibility;
 }
 
 public class Request {
