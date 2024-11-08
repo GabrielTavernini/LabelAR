@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.InputSystem.Interactions;
 
 public static class MaterialHelper
 {
+
     public static void SetSolid(Material material)
     {
         Color tempColor = material.color;
@@ -24,7 +26,9 @@ public static class MaterialHelper
 
     public static void SetFullyTransparent(Material material, Shader transparentShader)
     {
+        Color color = material.color;
         material.shader = transparentShader;
+        material.color = color;
     }
 
     private static void SetToOpaque(Material material)
