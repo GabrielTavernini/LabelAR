@@ -40,6 +40,14 @@ public class Orchestrator : MonoBehaviour
         spatialAnchors = new SpatialAnchors(anchorManager);
         worldLoader = new WorldLoader(buildings, highlightMaterial, material);
         labelLoader = new LabelLoader(labels, textMaterial);
+
+#if !UNITY_ANDROID || UNITY_EDITOR
+        marker = Instantiate(markerVisualPrefab);
+        marker.name = "Marker";
+        marker.transform.position = new Vector3(0, 0, 1);
+        marker.transform.rotation = Quaternion.Euler(new Vector3(0, 120, 0));
+        StartCoroutine(LoadAssets(0));
+#endif
     }
 
     public void SetAdjustmentMode(bool value)

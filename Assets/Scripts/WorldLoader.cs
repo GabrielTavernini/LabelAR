@@ -11,6 +11,7 @@ public class WorldLoader
 
     public static readonly int X_offset = 2600000;
     public static readonly int Z_offset = 1200000;
+    public static readonly int radius = 2500;
 
     public WorldLoader(GameObject buildings, Material highlightMaterial, Material material)
     {
@@ -35,8 +36,8 @@ public class WorldLoader
 
     GameObject SpawnMesh(Mesh mesh, bool highlight = false, bool ignoreRadius = false)
     {
-        // if(!ignoreRadius && Vector3.Distance(mesh.bounds.center + buildings.transform.localPosition, MarkerUnderstanding.aprilTag.transform.position) > 1000)
-        //     return null;
+        if(!ignoreRadius && Vector3.Distance(mesh.bounds.center, -buildings.transform.localPosition) > radius)
+            return null;
 
         string Handle = mesh.name;
         GameObject polyfaceMeshObj = new GameObject(Handle);
