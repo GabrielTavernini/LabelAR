@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MagicLeap.OpenXR.Features.LocalizationMaps;
+using MagicLeap.OpenXR.Features;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -52,7 +53,7 @@ public class ViewSettings : MonoBehaviour
 
     public void ToggleVisibility(bool value)
     {
-        //orchestrator.UseVisibility = value;
+        Camera.main.farClipPlane = value ? Request.response.visibility : 10000;
     }
 
     void Update()

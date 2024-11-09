@@ -22,7 +22,6 @@ public class Orchestrator : MonoBehaviour
     public Material highlightMaterial; // material for labeled buildings
     [SerializeField] private Material textMaterial;
     [SerializeField] private ARAnchorManager anchorManager;
-    [SerializeField] private bool UseVisibility;
 
     private SpatialAnchors spatialAnchors;
     private WorldLoader worldLoader;
@@ -145,6 +144,7 @@ public class Orchestrator : MonoBehaviour
         Debug.Log(builder.ToString());
 
         yield return Request.Load(mapName);
+        Camera.main.farClipPlane = Request.response.visibility;
         SpawnWorld();
         SpawnLabels();
     }
