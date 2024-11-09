@@ -63,7 +63,13 @@ public class Orchestrator : MonoBehaviour
 
         _controllerActions.MenuButton.performed += OnMenuClick;
 
-
+#if !UNITY_ANDROID || UNITY_EDITOR
+        marker = Instantiate(markerVisualPrefab);
+        marker.name = "Marker";
+        marker.transform.position = new Vector3(0, 0, 1);
+        marker.transform.rotation = Quaternion.Euler(new Vector3(0, 120, 0));
+        StartCoroutine(LoadAssets("Polyterrasse"));
+#endif
     }
 
     public void SetAdjustmentMode(bool value)
@@ -126,19 +132,19 @@ public class Orchestrator : MonoBehaviour
             SetAdjustmentMode(true);
         }
 
-        yield return LoadAssets(0);
+        yield return LoadAssets(mapName);
     }
 
-    private IEnumerator LoadAssets(int code)
+    private IEnumerator LoadAssets(string mapName)
     {
         StringBuilder builder = new StringBuilder();
         builder.AppendLine("Spawning labels starting from");
-        builder.AppendLine("Code: " + code);
+        builder.AppendLine("Map Name: " + mapName);
         builder.AppendLine("Position: " + marker.transform.position);
         builder.AppendLine("Rotation: " + marker.transform.rotation);
         Debug.Log(builder.ToString());
 
-        yield return Request.Load(code);
+        yield return Request.Load(mapName);
         SpawnWorld();
         SpawnLabels();
     }

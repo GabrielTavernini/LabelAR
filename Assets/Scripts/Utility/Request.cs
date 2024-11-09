@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -31,16 +30,12 @@ public class Response
 
 public class Request {
   public static Response response;
-  private static readonly string baseUrl = "labelar.ilbrigante.me/get_labels?number=";
+  private static readonly string baseUrl = "labelar.ilbrigante.me/get_labels?mapName=";
   
   private Request() {}
 
-  public static IEnumerator Load(int code) {
-    StringBuilder builder = new StringBuilder();
-    Debug.Log(builder.ToString());
-
-
-    string url = baseUrl + code;
+  public static IEnumerator Load(string mapName) {
+    string url = baseUrl + mapName;
     using (UnityWebRequest request = UnityWebRequest.Get(url))
     {
         yield return request.SendWebRequest();

@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.XR.OpenXR.NativeTypes;
+using System.Text.RegularExpressions;
 
 public class SceneSelection : MonoBehaviour
 {
@@ -37,8 +38,7 @@ public class SceneSelection : MonoBehaviour
         Debug.Log($"Request localization in: {maps[dropdown.value].MapUUID}");
         XrResult result = localizationMapFeature.RequestMapLocalization(maps[dropdown.value].MapUUID);
         Debug.Log($"Localize request result: {result}");
-
-        orchestrator.StartCoroutine(orchestrator.Open(maps[dropdown.value].Name));
+        orchestrator.StartCoroutine(orchestrator.Open(maps[dropdown.value].Name.Split('\0')[0]));
     }
 
     // Update is called once per frame
