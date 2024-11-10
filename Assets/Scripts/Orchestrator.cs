@@ -104,7 +104,7 @@ public class Orchestrator : MonoBehaviour
             marker.GetComponent<XRGrabInteractable>().interactionManager = null;
 
             // Enable the ViewSettings UI
-            viewSettings.SetActive(true);
+            viewSettings.SetActive(false);
             MaterialHelper.SetFullyTransparent(material, transparentShader);
         }
     }
