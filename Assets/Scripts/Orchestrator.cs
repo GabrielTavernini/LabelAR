@@ -8,6 +8,10 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.InputSystem;
+using System;
+using System.Numerics;
+using Vector3 = UnityEngine.Vector3;
+using Quaternion = UnityEngine.Quaternion;
 
 public class Orchestrator : MonoBehaviour
 {
@@ -22,6 +26,8 @@ public class Orchestrator : MonoBehaviour
     public Material highlightMaterial; // material for labeled buildings
     [SerializeField] private Material textMaterial;
     [SerializeField] private ARAnchorManager anchorManager;
+
+    private readonly int farClippingBound = 10000;
 
     private SpatialAnchors spatialAnchors;
     private WorldLoader worldLoader;
@@ -65,7 +71,7 @@ public class Orchestrator : MonoBehaviour
 #if UNITY_EDITOR
         marker = Instantiate(markerVisualPrefab);
         marker.name = "Marker";
-        marker.transform.position = new Vector3(0, 0, 1);
+        marker.transform.position = new Vector3(-20, 0, -40);
         marker.transform.rotation = Quaternion.Euler(new Vector3(0, 120, 0));
         StartCoroutine(LoadAssets("Andreasturm"));
 
@@ -182,8 +188,43 @@ public class Orchestrator : MonoBehaviour
 
     public void SetFarClippingPlane(float distance)
     {
+        if(distance < 0) distance = farClippingBound;
+        else distance = Math.Min(distance, farClippingBound);
+
         Camera.main.farClipPlane = distance;
         GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().maxRaycastDistance = distance;
+    }
+
+    public void CreateLabel(Payload payload, GameObject building) {
+        Debug.Log("Sending post request: " + JsonConvert.SerializeObject(payload));
+        StartCoroutine(Request.Post(payload));
+
+        // Highlight the building
+        building.GetComponent<MeshRenderer>().material = highlightMaterial;
+
+        var interactable = building.GetComponent<XRSimpleInteractable>();
+        interactable.hoverEntered.RemoveAllListeners();
+        interactable.hoverExited.RemoveAllListeners();
+        interactable.selectExited.RemoveAllListeners();
+        
+        Destroy(building.GetComponent<MeshCollider>());
+        Destroy(interactable);
+
+        // Create label and spawn it
+        Label label = new Label();
+        label.name = payload.name;
+        
+        Vector3 relativePosition = new Vector3(
+            payload.east - WorldLoader.X_offset, 
+            payload.height, 
+            payload.north - WorldLoader.Z_offset
+        ) + buildings.transform.localPosition;
+        label.x = relativePosition.x;
+        label.y = relativePosition.y;
+        label.z = relativePosition.z;
+
+        label.distance = relativePosition.magnitude;
+        labelLoader.SpawnLabel(label);
     }
 
     public IEnumerator SaveSpatialAnchor(Pose pose)

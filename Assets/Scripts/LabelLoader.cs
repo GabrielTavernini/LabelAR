@@ -40,7 +40,7 @@ public class LabelLoader
 
         int counter = 0;
         foreach (Label l in response.labels) {
-            GameObject obj = SpawnObjectAtPosition(l);
+            GameObject obj = SpawnLabel(l);
             labelObjects.Add((obj, l.distance));
 
             if(counter++ % 500 == 0) yield return null;
@@ -53,7 +53,7 @@ public class LabelLoader
             obj.SetActive(!useVisibility || distance <= visibility);
     }
 
-    private GameObject SpawnObjectAtPosition(Label label)
+    public GameObject SpawnLabel(Label label)
     {
         Debug.Log("Spawning label " + label.name + " at " + label.x + " " + label.y + " " + label.z);
         GameObject obj = new GameObject(); // Instantiate(instance.prefab);

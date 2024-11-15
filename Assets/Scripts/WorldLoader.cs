@@ -87,21 +87,20 @@ public class WorldLoader
             interactable.hoverEntered.AddListener(_ => meshRenderer.material = highlightMaterial);
             interactable.hoverExited.AddListener(_ => meshRenderer.material = material);
 
-            interactable.selectExited.AddListener(_ => SelectedMesh(mesh));
+            interactable.selectExited.AddListener(_ => SelectedMesh(polyfaceMeshObj, mesh));
         }
 
         return polyfaceMeshObj;
     }
 
-    private void SelectedMesh(Mesh mesh) {
+    private void SelectedMesh(GameObject building, Mesh mesh) {
         Payload payload = new Payload();
         payload.name = mesh.name;
         payload.east = mesh.bounds.center.x + X_offset;
         payload.north = mesh.bounds.center.z + Z_offset;
         payload.height = mesh.bounds.center.y + 20;
-        payload.buildings = new List<string>(){mesh.name};
+        payload.buildings = new List<string>(){mesh.name};        
 
-        Debug.Log("Sending post request: " + JsonConvert.SerializeObject(payload));
-        orchestrator.StartCoroutine(Request.Post(payload));
+        orchestrator.CreateLabel(payload, building);
     }
 }

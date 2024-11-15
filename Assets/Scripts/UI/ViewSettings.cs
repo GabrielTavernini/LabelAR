@@ -53,7 +53,7 @@ public class ViewSettings : MonoBehaviour
 
     public void ToggleVisibility(bool value)
     {
-        orchestrator.SetFarClippingPlane(value ? Request.response.visibility : 10000);
+        orchestrator.SetFarClippingPlane(value ? Request.response.visibility : -1);
     }
 
     void Update()
