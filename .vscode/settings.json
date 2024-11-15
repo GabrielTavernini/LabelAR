@@ -53,6 +53,7 @@
     },
     "dotnet.defaultSolution": "LabelAR.sln",
     "cSpell.words": [
+        "interactable",
         "Polyface"
     ]
 }

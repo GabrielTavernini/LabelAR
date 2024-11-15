@@ -53,7 +53,7 @@ public class ViewSettings : MonoBehaviour
 
     public void ToggleVisibility(bool value)
     {
-        Camera.main.farClipPlane = value ? Request.response.visibility : 10000;
+        orchestrator.SetFarClippingPlane(value ? Request.response.visibility : 10000);
     }
 
     void Update()

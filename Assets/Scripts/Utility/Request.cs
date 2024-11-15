@@ -28,28 +28,60 @@ public class Response
     public float visibility;
 }
 
-public class Request {
-  public static Response response;
-  private static readonly string baseUrl = "labelar.ilbrigante.me/get_labels?mapName=";
-  
-  private Request() {}
+public class Payload
+{
+    public string name;
+    public float north;
+    public float east;
+    public float height;
+    public List<string> buildings;
+}
 
-  public static IEnumerator Load(string mapName) {
-    string url = baseUrl + mapName;
-    using (UnityWebRequest request = UnityWebRequest.Get(url))
+public class Request
+{
+    public static Response response;
+    private static readonly string baseUrl = "labelar.ilbrigante.me";
+
+    private Request() { }
+
+    public static IEnumerator Load(string mapName)
     {
-        yield return request.SendWebRequest();
-        if (request.result != UnityWebRequest.Result.Success)
+        string url = $"{baseUrl}/get_labels?mapName={mapName}";
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
-            Debug.LogError("Error fetching data: " + request.error);
-        }
-        else
-        {
-            // Parse the JSON response
-            string jsonResponse = request.downloadHandler.text;
-            Debug.Log("Labels received from server: " + jsonResponse);
-            response = JsonConvert.DeserializeObject<Response>(jsonResponse);
+            yield return request.SendWebRequest();
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("Error fetching data: " + request.error);
+            }
+            else
+            {
+                // Parse the JSON response
+                string jsonResponse = request.downloadHandler.text;
+                Debug.Log("Labels received from server: " + jsonResponse);
+                response = JsonConvert.DeserializeObject<Response>(jsonResponse);
+            }
         }
     }
-  }
+
+
+
+    public static IEnumerator Post(Payload payload)
+    {
+        string url = $"{baseUrl}/add_label";
+        using (UnityWebRequest request = UnityWebRequest.Post(url, JsonConvert.SerializeObject(payload), "application/json"))
+        {
+            yield return request.SendWebRequest();
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("Error fetching data: " + request.error);
+            }
+            else
+            {
+                // Parse the JSON response
+                string jsonResponse = request.downloadHandler.text;
+                Debug.Log("Add label response: " + jsonResponse);
+            }
+        }
+    }
 }
