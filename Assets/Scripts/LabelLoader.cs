@@ -61,7 +61,14 @@ public class LabelLoader
         obj.transform.localPosition = new Vector3(label.x, label.y, label.z);
         obj.name = label.name;
 
-        float scale = Math.Max(Math.Min((float)(1 + 12*label.distance/1000), 50), 7);
+        if(label.distance > Orchestrator.farClippingBound) {
+            Vector3 direction = obj.transform.localPosition;
+            direction.Normalize();
+            direction *= Orchestrator.farClippingBound - 250;
+            obj.transform.localPosition = direction;
+        }
+
+        float scale = Math.Max(Math.Min((float)(1 + 12*label.distance/1000), 200), 7);
         obj.transform.localScale = new Vector3(scale, scale, scale);
 
         // Add a TextMesh component to display the text

@@ -27,7 +27,7 @@ public class Orchestrator : MonoBehaviour
     [SerializeField] private Material textMaterial;
     [SerializeField] private ARAnchorManager anchorManager;
 
-    private readonly int farClippingBound = 10000;
+    public static readonly int farClippingBound = 10000;
 
     private SpatialAnchors spatialAnchors;
     private WorldLoader worldLoader;
@@ -71,12 +71,13 @@ public class Orchestrator : MonoBehaviour
 #if UNITY_EDITOR
         marker = Instantiate(markerVisualPrefab);
         marker.name = "Marker";
-        marker.transform.position = new Vector3(-20, 0, -40);
-        marker.transform.rotation = Quaternion.Euler(new Vector3(0, 120, 0));
+        marker.transform.position = new Vector3(0, 0, 0);
+        marker.transform.rotation = Quaternion.Euler(new Vector3(0, 150, 0));
         StartCoroutine(LoadAssets("Andreasturm"));
 
         sceneSelection.SetActive(false);
-        SetAdjustmentMode(false);
+        SetAdjustmentMode(true);
+        SetFarClippingPlane(farClippingBound);
 #endif
     }
 
