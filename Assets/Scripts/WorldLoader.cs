@@ -48,22 +48,55 @@ public class WorldLoader
         int counter = 0;
         foreach (var mesh in Resources.LoadAll<Mesh>("Buildings/")) {
             bool highlight = highlightedBuildings.Contains(mesh.name);
-            SpawnMesh(mesh, highlight, !highlight);
+            SpawnBuilding(mesh, highlight);
             if(counter++ % 500 == 0) yield return null;
         }
 
         yield return null;
         foreach (var mesh in Resources.LoadAll<Mesh>("Terrain/")) {
-            yield return SpawnMesh(mesh, ignoreRadius:true);
+            yield return SpawnTerrain(mesh);
         }
     }
 
-    GameObject SpawnMesh(Mesh mesh, bool highlight = false, bool collider = false, bool ignoreRadius = false)
-    {
+    GameObject SpawnBuilding(Mesh mesh, bool highlight) {
         double distance = Vector3.Distance(mesh.bounds.center, -buildings.transform.localPosition);
-        if(!ignoreRadius && distance > radius)
+        if(distance > radius)
             return null;
+        
+        Material mat = highlight ? highlightMaterial : material;
+        GameObject building = SpawnMesh(mesh, mat);
 
+        if(!highlight) {
+            var colliderComponent = building.AddComponent<MeshCollider>();
+            colliderComponent.enabled = enableColliders;
+            
+            var meshRenderer = building.GetComponent<MeshRenderer>();
+            var interactable = building.AddComponent<XRSimpleInteractable>();
+            interactable.interactionManager = this.interactionManager;
+            interactable.hoverEntered.AddListener(_ => meshRenderer.material = highlightMaterial);
+            interactable.hoverExited.AddListener(_ => meshRenderer.material = material);
+
+            interactable.selectExited.AddListener(_ => SelectedBuilding(building, mesh));
+        }
+
+        return building;
+    }
+
+    GameObject SpawnTerrain(Mesh mesh) {
+        GameObject terrain = SpawnMesh(mesh, material);
+
+        var colliderComponent = terrain.AddComponent<MeshCollider>();
+        colliderComponent.enabled = enableColliders;
+        
+        var interactable = terrain.AddComponent<XRSimpleInteractable>();
+        interactable.interactionManager = this.interactionManager;
+        interactable.selectExited.AddListener(_ => SelectedTerrain(terrain));
+
+        return terrain;
+    }
+
+    GameObject SpawnMesh(Mesh mesh, Material material)
+    {
         GameObject polyfaceMeshObj = new GameObject(mesh.name);
         polyfaceMeshObj.transform.parent = buildings.transform;
         polyfaceMeshObj.transform.localPosition = new Vector3();
@@ -76,24 +109,12 @@ public class WorldLoader
         meshRenderer.receiveShadows = false;
 
         meshFilter.mesh = mesh;
-        meshRenderer.material = highlight ? highlightMaterial : material;
-
-        if(collider) {
-            var colliderComponent = polyfaceMeshObj.AddComponent<MeshCollider>();
-            colliderComponent.enabled = enableColliders;
-            
-            var interactable = polyfaceMeshObj.AddComponent<XRSimpleInteractable>();
-            interactable.interactionManager = this.interactionManager;
-            interactable.hoverEntered.AddListener(_ => meshRenderer.material = highlightMaterial);
-            interactable.hoverExited.AddListener(_ => meshRenderer.material = material);
-
-            interactable.selectExited.AddListener(_ => SelectedMesh(polyfaceMeshObj, mesh));
-        }
+        meshRenderer.material = material;
 
         return polyfaceMeshObj;
     }
 
-    private void SelectedMesh(GameObject building, Mesh mesh) {
+    private void SelectedBuilding(GameObject building, Mesh mesh) {
         Payload payload = new Payload();
         payload.name = mesh.name;
         payload.east = mesh.bounds.center.x + X_offset;
@@ -102,5 +123,10 @@ public class WorldLoader
         payload.buildings = new List<string>(){mesh.name};        
 
         orchestrator.CreateLabel(payload, building);
+    }
+
+    private void SelectedTerrain(GameObject terrain) {
+        GameObject.FindAnyObjectByType<XRRayInteractor>().TryGetCurrent3DRaycastHit(out RaycastHit raycastHit);
+        Debug.Log($"Terrain hit at: {raycastHit.point}");
     }
 }
