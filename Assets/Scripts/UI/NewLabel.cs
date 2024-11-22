@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MagicLeap.XRKeyboard;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class NewLabel : MonoBehaviour
     [SerializeField] private Orchestrator orchestrator;
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private Button cancelButton;
+    [SerializeField] private GameObject keyboard;
 
     // Start is called before the first frame update
     void Start()
@@ -37,7 +39,9 @@ public class NewLabel : MonoBehaviour
         this.payload = payload;
         this.building = building;
 
-        this.inputField.Select();
+        inputField.Select();
+        inputField.ActivateInputField();
+        keyboard.SetActive(true);
     }
 
     void CommitLabel(string inputText) {

@@ -2505,6 +2505,7 @@ MonoBehaviour:
   orchestrator: {fileID: 2089831550}
   inputField: {fileID: 616255656}
   cancelButton: {fileID: 474940043}
+  keyboard: {fileID: 249867499}
 --- !u!1 &472404593
 GameObject:
   m_ObjectHideFlags: 0

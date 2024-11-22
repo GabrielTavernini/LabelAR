@@ -12,6 +12,8 @@ using System;
 using System.Numerics;
 using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class Orchestrator : MonoBehaviour
 {
@@ -68,6 +70,7 @@ public class Orchestrator : MonoBehaviour
         //Initialize the ControllerActions using the Magic Leap Input
         _controllerActions = new MagicLeapInput.ControllerActions(_magicLeapInputs);
         _controllerActions.MenuButton.performed += OnMenuClick;
+        _controllerActions.Trigger.canceled += OnTriggerClick;
 
 #if UNITY_EDITOR
         marker = Instantiate(markerVisualPrefab);
@@ -82,6 +85,13 @@ public class Orchestrator : MonoBehaviour
 #endif
     }
 
+    void Update() {
+#if UNITY_EDITOR
+        if (Keyboard.current.tKey.wasPressedThisFrame)
+            OnTriggerClick(new InputAction.CallbackContext());
+#endif
+    }
+ 
     public void SetAdjustmentMode(bool value)
     {
         AdjustmentMode = value;
@@ -276,6 +286,26 @@ public class Orchestrator : MonoBehaviour
         if (!AdjustmentMode)
         {
             viewSettings.SetActive(!viewSettings.activeSelf);
+        }
+    }
+
+    private void OnTriggerClick(InputAction.CallbackContext obj)
+    {
+        if (!AdjustmentMode)
+        {
+            Vector3 direction = GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().rayEndPoint;
+            direction.Normalize();
+            direction *= farClippingBound*5;
+
+            Debug.Log("Controller direction: " + direction);
+            Payload payload = new Payload();
+            Vector3 rayHitPoint = Quaternion.Inverse(buildings.transform.rotation) * direction;
+            payload.east = rayHitPoint.x + Request.response.coordinates.east;
+            payload.north = rayHitPoint.z + Request.response.coordinates.north;
+            payload.height = rayHitPoint.y + Request.response.coordinates.altitude;
+            payload.buildings = new List<string>(){};
+
+            CreateLabel(payload);
         }
     }
 
