@@ -17,6 +17,7 @@ public class Orchestrator : MonoBehaviour
 {
     [SerializeField] private GameObject sceneSelection;
     [SerializeField] private GameObject viewSettings;
+    [SerializeField] private GameObject newLabel;
 
 
     [SerializeField] private GameObject markerVisualPrefab;

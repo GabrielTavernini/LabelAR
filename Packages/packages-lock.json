@@ -7,7 +7,7 @@
       "dependencies": {}
     },
     "com.magicleap.unitysdk": {
-      "version": "file:/Users/gabriel/Development/Installs/MagicLeap/tools/unity/v2.5.0/com.magicleap.unitysdk.tgz",
+      "version": "file:/Users/ilboglions/MagicLeap/tools/unity/v2.5.0/com.magicleap.unitysdk.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
@@ -20,6 +20,16 @@
         "com.unity.collections": "2.2.1",
         "com.unity.burst": "1.8.9"
       }
+    },
+    "com.magicleap.xrkeyboard": {
+      "version": "https://github.com/magicleap/MagicLeapXRKeyboard.git?path=/Packages/MagicLeapXRKeyboard",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.unity.xr.interaction.toolkit": "2.2.0"
+      },
+      "hash": "626c7750650dd215f2229a5131a0e50794282364"
     },
     "com.unity.burst": {
       "version": "1.8.18",
