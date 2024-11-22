@@ -20,6 +20,7 @@ public class ViewSettings : MonoBehaviour
     [SerializeField] private Button transparentButton;
     [SerializeField] private Button semiTransparentButton;
     [SerializeField] private Toggle visibilityToggle;
+    [SerializeField] private Toggle occlusionToggle;
 
     void Start()
     {
@@ -28,6 +29,7 @@ public class ViewSettings : MonoBehaviour
         transparentButton.onClick.AddListener(SetFullyTransparent);
         semiTransparentButton.onClick.AddListener(SetTransparent);
         visibilityToggle.onValueChanged.AddListener(ToggleVisibility);
+        occlusionToggle.onValueChanged.AddListener(ToggleOcclusion);
         editButton.onClick.AddListener(SetEdit);
     }
 
@@ -54,6 +56,11 @@ public class ViewSettings : MonoBehaviour
     public void ToggleVisibility(bool value)
     {
         orchestrator.SetFarClippingPlane(value ? Request.response.visibility : -1);
+    }
+
+    public void ToggleOcclusion(bool value)
+    {
+        orchestrator.SetOcclusion(value);
     }
 
     void Update()

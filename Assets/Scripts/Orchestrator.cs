@@ -22,6 +22,7 @@ public class Orchestrator : MonoBehaviour
 
     [SerializeField] private GameObject markerVisualPrefab;
     [SerializeField] private XRInteractionManager interactionManager;
+    [SerializeField] private GameObject occlusionManager;
     [SerializeField] private Shader transparentShader;
     public Material material; // material for non-labeled buildings
     public Material highlightMaterial; // material for labeled buildings
@@ -66,7 +67,6 @@ public class Orchestrator : MonoBehaviour
 
         //Initialize the ControllerActions using the Magic Leap Input
         _controllerActions = new MagicLeapInput.ControllerActions(_magicLeapInputs);
-
         _controllerActions.MenuButton.performed += OnMenuClick;
 
 #if UNITY_EDITOR
@@ -188,15 +188,6 @@ public class Orchestrator : MonoBehaviour
         StartCoroutine(labelLoader.SpawnLabels(Request.response));
     }
 
-    public void SetFarClippingPlane(float distance)
-    {
-        if(distance < 0) distance = farClippingBound;
-        else distance = Math.Min(distance, farClippingBound);
-
-        Camera.main.farClipPlane = distance;
-        GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().maxRaycastDistance = distance;
-    }
-
     public void CreateLabel(Payload payload, GameObject building = null) {
         worldLoader.DisableColliders();
         newLabel.SetActive(true);
@@ -267,8 +258,17 @@ public class Orchestrator : MonoBehaviour
         SetAdjustmentMode(false);
     }
 
-    void OnDestroy()
+    public void SetFarClippingPlane(float distance)
     {
+        if(distance < 0) distance = farClippingBound;
+        else distance = Math.Min(distance, farClippingBound);
+
+        Camera.main.farClipPlane = distance;
+        GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().maxRaycastDistance = distance;
+    }
+
+    public void SetOcclusion(bool value) {
+        occlusionManager.GetComponent<Occlusion>().SetEnableOcclusion(value);
     }
 
     private void OnMenuClick(InputAction.CallbackContext obj)
@@ -278,4 +278,9 @@ public class Orchestrator : MonoBehaviour
             viewSettings.SetActive(!viewSettings.activeSelf);
         }
     }
+
+    void OnDestroy()
+    {
+    }
+
 }

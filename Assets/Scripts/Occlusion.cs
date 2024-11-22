@@ -33,8 +33,8 @@ public class Occlusion : MonoBehaviour
             return;
         }
 
-        // Enable occlusion and configure sources
-        occlusionFeature.EnableOcclusion = true;
+        // Configure sources, occlusion off by default
+        occlusionFeature.EnableOcclusion = false;
         occlusionFeature.EnabledOcclusionSource = _occlusionSource;
 
         // Configure depth sensor properties to the range specified in the inspector,
@@ -51,5 +51,10 @@ public class Occlusion : MonoBehaviour
             occlusionFeature.EnableOcclusion = false;
             occlusionFeature.EnabledOcclusionSource = 0;
         }
+    }
+
+    public void SetEnableOcclusion(bool value) {
+        Debug.Log("Setting occlusion feature to: " + value);
+        occlusionFeature.EnableOcclusion = value;
     }
 }
