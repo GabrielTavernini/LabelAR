@@ -61,15 +61,32 @@ public class LabelLoader
         obj.transform.localPosition = new Vector3(label.x, label.y, label.z);
         obj.name = label.name;
 
+        float scale = Math.Max(Math.Min((float)(1 + 12*label.distance/1000), 200), 7);
+        obj.transform.localScale = new Vector3(scale, scale, scale);
+
         if(label.distance > Orchestrator.farClippingBound) {
             Vector3 direction = obj.transform.localPosition;
             direction.Normalize();
             direction *= Orchestrator.farClippingBound - 250;
-            obj.transform.localPosition = direction;
-        }
+            float heightGap = (label.distance/1000 - 10)*10;
+            obj.transform.localPosition = direction + new Vector3(0,heightGap,0);
 
-        float scale = Math.Max(Math.Min((float)(1 + 12*label.distance/1000), 200), 7);
-        obj.transform.localScale = new Vector3(scale, scale, scale);
+            GameObject beam = new GameObject();
+            beam.name = "bream";
+            beam.transform.parent = obj.transform;
+            LineRenderer lineRenderer = beam.AddComponent<LineRenderer>();
+
+            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            lineRenderer.startColor =  Color.gray;
+            lineRenderer.endColor =  Color.gray;
+
+            lineRenderer.startWidth = 20f;
+            lineRenderer.endWidth = 20f;
+
+            lineRenderer.positionCount = 2;
+            lineRenderer.SetPosition(0, obj.transform.position - new Vector3(0,heightGap,0));
+            lineRenderer.SetPosition(1, obj.transform.position - new Vector3(0,scale/1.25f,0));
+        }
 
         // Add a TextMesh component to display the text
         TextMeshPro textMesh = obj.AddComponent<TextMeshPro>();

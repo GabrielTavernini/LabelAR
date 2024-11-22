@@ -77,7 +77,7 @@ public class Orchestrator : MonoBehaviour
         StartCoroutine(LoadAssets("Andreasturm"));
 
         sceneSelection.SetActive(false);
-        SetAdjustmentMode(true);
+        SetAdjustmentMode(false);
         SetFarClippingPlane(farClippingBound);
 #endif
     }
@@ -197,30 +197,57 @@ public class Orchestrator : MonoBehaviour
         GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().maxRaycastDistance = distance;
     }
 
-    public void CreateLabel(Payload payload, GameObject building) {
+    public void CreateLabel(Payload payload, GameObject building = null) {
+        worldLoader.DisableColliders();
+        newLabel.SetActive(true);
+        newLabel.GetComponent<NewLabel>().InitiateCreation(payload, building);
+    }
+
+    public void CancelLabelCreation() {
+        newLabel.SetActive(false);
+        worldLoader.EnableColliders();
+    }
+
+    public void CommitLabel(Payload payload, GameObject building = null) {
+        newLabel.SetActive(false);
+        worldLoader.EnableColliders();
+
         Debug.Log("Sending post request: " + JsonConvert.SerializeObject(payload));
         StartCoroutine(Request.Post(payload));
 
-        // Highlight the building
-        building.GetComponent<MeshRenderer>().material = highlightMaterial;
+        // Position of the label to spawn
+        Vector3 relativePosition = new Vector3(
+            payload.east, 
+            payload.height, 
+            payload.north
+        );
 
-        var interactable = building.GetComponent<XRSimpleInteractable>();
-        interactable.hoverEntered.RemoveAllListeners();
-        interactable.hoverExited.RemoveAllListeners();
-        interactable.selectExited.RemoveAllListeners();
-        
-        Destroy(building.GetComponent<MeshCollider>());
-        Destroy(interactable);
+        // Highlight the building
+        if(building) {
+            relativePosition -= new Vector3(WorldLoader.X_offset, 0, WorldLoader.Z_offset);
+            relativePosition += buildings.transform.localPosition;
+
+            building.GetComponent<MeshRenderer>().material = highlightMaterial;
+
+            var interactable = building.GetComponent<XRSimpleInteractable>();
+            interactable.hoverEntered.RemoveAllListeners();
+            interactable.hoverExited.RemoveAllListeners();
+            interactable.selectExited.RemoveAllListeners();
+            
+            Destroy(building.GetComponent<MeshCollider>());
+            Destroy(interactable);
+        } else {
+            relativePosition -= new Vector3(
+                Request.response.coordinates.east, 
+                Request.response.coordinates.altitude, 
+                Request.response.coordinates.north
+            );
+            relativePosition -= labels.transform.localPosition;
+        }
 
         // Create label and spawn it
         Label label = new Label();
         label.name = payload.name;
-        
-        Vector3 relativePosition = new Vector3(
-            payload.east - WorldLoader.X_offset, 
-            payload.height, 
-            payload.north - WorldLoader.Z_offset
-        ) + buildings.transform.localPosition;
         label.x = relativePosition.x;
         label.y = relativePosition.y;
         label.z = relativePosition.z;
