@@ -46,16 +46,16 @@ public class WorldLoader
   
     public IEnumerator GenerateWorld(HashSet<string> highlightedBuildings)
     {
+        foreach (var mesh in Resources.LoadAll<Mesh>("Terrain/")) {
+            yield return SpawnTerrain(mesh);
+        }
+        yield return null;
+
         int counter = 0;
         foreach (var mesh in Resources.LoadAll<Mesh>("Buildings/")) {
             bool highlight = highlightedBuildings.Contains(mesh.name);
             SpawnBuilding(mesh, highlight);
             if(counter++ % 500 == 0) yield return null;
-        }
-
-        yield return null;
-        foreach (var mesh in Resources.LoadAll<Mesh>("Terrain/")) {
-            yield return SpawnTerrain(mesh);
         }
     }
 
