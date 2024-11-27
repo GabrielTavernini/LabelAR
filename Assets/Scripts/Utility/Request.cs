@@ -18,6 +18,7 @@ public class Label
     public float z;
     public float distance;
     public string name;
+    // public HashSet<string> buildings;
 }
 
 public class Response
@@ -28,13 +29,22 @@ public class Response
     public float visibility;
 }
 
-public class Payload
+public class AddLabelPayload
 {
     public string name;
     public float north;
     public float east;
     public float height;
     public List<string> buildings;
+}
+
+public class EditLabelPayload {
+    public string oldName;
+    public string newName;
+}
+
+public class DeleteLabelPayload {
+    public string name;
 }
 
 public class Request
@@ -66,7 +76,7 @@ public class Request
 
 
 
-    public static IEnumerator Post(Payload payload)
+    public static IEnumerator AddLabel(AddLabelPayload payload)
     {
         string url = $"{baseUrl}/add_label";
         using (UnityWebRequest request = UnityWebRequest.Post(url, JsonConvert.SerializeObject(payload), "application/json"))
@@ -83,5 +93,17 @@ public class Request
                 Debug.Log("Add label response: " + jsonResponse);
             }
         }
+    }
+
+    public static IEnumerator EditLabel(EditLabelPayload payload)
+    {
+        Debug.Log("Edit: " + payload.oldName);
+        yield return null;
+    }
+
+    public static IEnumerator DeleteLabel(DeleteLabelPayload payload)
+    {
+        Debug.Log("Delete: " + payload.name);
+        yield return null;
     }
 }

@@ -19,6 +19,7 @@ public class Orchestrator : MonoBehaviour
 {
     [SerializeField] private GameObject sceneSelection;
     [SerializeField] private GameObject viewSettings;
+    [SerializeField] private GameObject editLabels;
     [SerializeField] private GameObject newLabel;
 
 
@@ -52,6 +53,7 @@ public class Orchestrator : MonoBehaviour
     private MagicLeapInput.ControllerActions _controllerActions;
 
     private bool AdjustmentMode = false;
+    private bool EditMode = false;
 
 
     void Start()
@@ -91,7 +93,30 @@ public class Orchestrator : MonoBehaviour
             OnTriggerClick(new InputAction.CallbackContext());
 #endif
     }
- 
+    
+    public void SetEditMode(bool value) {
+        EditMode = value;
+        Debug.Log("Edit mode: " + value);
+        if (value)
+        {
+            // Disable building selection
+            worldLoader.DisableColliders();
+
+            // Disable the ViewSettings UI and set the material to opaque
+            viewSettings.SetActive(false);
+            editLabels.SetActive(true);
+        }
+        else
+        {
+            // Enable building selection
+            worldLoader.EnableColliders();
+
+            // Enable the ViewSettings UI
+            viewSettings.SetActive(false);
+            editLabels.SetActive(false);
+        }
+    }
+
     public void SetAdjustmentMode(bool value)
     {
         AdjustmentMode = value;
@@ -198,7 +223,7 @@ public class Orchestrator : MonoBehaviour
         StartCoroutine(labelLoader.SpawnLabels(Request.response));
     }
 
-    public void CreateLabel(Payload payload, GameObject building = null) {
+    public void CreateLabel(AddLabelPayload payload, GameObject building = null) {
         worldLoader.DisableColliders();
         newLabel.SetActive(true);
         newLabel.GetComponent<NewLabel>().InitiateCreation(payload, building);
@@ -209,12 +234,12 @@ public class Orchestrator : MonoBehaviour
         worldLoader.EnableColliders();
     }
 
-    public void CommitLabel(Payload payload, GameObject building = null) {
+    public void CommitLabel(AddLabelPayload payload, GameObject building = null) {
         newLabel.SetActive(false);
         worldLoader.EnableColliders();
 
         Debug.Log("Sending post request: " + JsonConvert.SerializeObject(payload));
-        StartCoroutine(Request.Post(payload));
+        StartCoroutine(Request.AddLabel(payload));
 
         // Position of the label to spawn
         Vector3 relativePosition = new Vector3(
@@ -285,20 +310,21 @@ public class Orchestrator : MonoBehaviour
     {
         if (!AdjustmentMode)
         {
+            if(EditMode) SetEditMode(false);
             viewSettings.SetActive(!viewSettings.activeSelf);
         }
     }
 
     private void OnTriggerClick(InputAction.CallbackContext obj)
     {
-        if (!AdjustmentMode)
+        if (!AdjustmentMode && !EditMode)
         {
             Vector3 direction = GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().rayEndPoint;
             direction.Normalize();
             direction *= farClippingBound*5;
 
             Debug.Log("Controller direction: " + direction);
-            Payload payload = new Payload();
+            AddLabelPayload payload = new AddLabelPayload();
             Vector3 rayHitPoint = Quaternion.Inverse(buildings.transform.rotation) * direction;
             payload.east = rayHitPoint.x + Request.response.coordinates.east;
             payload.north = rayHitPoint.z + Request.response.coordinates.north;

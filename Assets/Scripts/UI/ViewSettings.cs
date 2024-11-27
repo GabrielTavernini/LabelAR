@@ -15,6 +15,7 @@ public class ViewSettings : MonoBehaviour
     [SerializeField] private Orchestrator orchestrator;
     [SerializeField] private Shader transparentShader;
 
+    [SerializeField] private Button adjustButton;
     [SerializeField] private Button editButton;
     [SerializeField] private Button solidButton;
     [SerializeField] private Button transparentButton;
@@ -31,6 +32,7 @@ public class ViewSettings : MonoBehaviour
         visibilityToggle.onValueChanged.AddListener(ToggleVisibility);
         occlusionToggle.onValueChanged.AddListener(ToggleOcclusion);
         editButton.onClick.AddListener(SetEdit);
+        adjustButton.onClick.AddListener(SetAdjust);
     }
 
     public void SetSolid()
@@ -49,6 +51,11 @@ public class ViewSettings : MonoBehaviour
     }
 
     public void SetEdit()
+    {
+        orchestrator.SetEditMode(true);
+    }
+
+    public void SetAdjust()
     {
         orchestrator.SetAdjustmentMode(true);
     }

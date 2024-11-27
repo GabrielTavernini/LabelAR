@@ -10,7 +10,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class NewLabel : MonoBehaviour
 {
-    private Payload payload;
+    private AddLabelPayload payload;
     private GameObject building;
 
     [SerializeField] private Orchestrator orchestrator;
@@ -35,7 +35,7 @@ public class NewLabel : MonoBehaviour
         orchestrator.CancelLabelCreation();
     }
 
-    public void InitiateCreation(Payload payload, GameObject building) {
+    public void InitiateCreation(AddLabelPayload payload, GameObject building) {
         this.payload = payload;
         this.building = building;
 

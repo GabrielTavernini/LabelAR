@@ -117,7 +117,7 @@ public class WorldLoader
 
     private void SelectedBuilding(GameObject building, Mesh mesh) {
         Debug.Log($"Building hit at: {mesh.bounds.center}");
-        Payload payload = new Payload();
+        AddLabelPayload payload = new AddLabelPayload();
         payload.east = mesh.bounds.center.x + X_offset;
         payload.north = mesh.bounds.center.z + Z_offset;
         payload.height = mesh.bounds.center.y + 20;
@@ -130,7 +130,7 @@ public class WorldLoader
         GameObject.FindAnyObjectByType<XRRayInteractor>().TryGetCurrent3DRaycastHit(out RaycastHit raycastHit);
         Debug.Log($"Terrain hit at: {raycastHit.point}");
 
-        Payload payload = new Payload();
+        AddLabelPayload payload = new AddLabelPayload();
         Vector3 rayHitPoint = Quaternion.Inverse(buildings.transform.rotation) * raycastHit.point;
         payload.east = rayHitPoint.x + Request.response.coordinates.east;
         payload.north = rayHitPoint.z + Request.response.coordinates.north;
