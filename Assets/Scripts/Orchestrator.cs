@@ -14,11 +14,13 @@ using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using TMPro;
 
 public class Orchestrator : MonoBehaviour
 {
     [SerializeField] private GameObject sceneSelection;
     [SerializeField] private GameObject viewSettings;
+    [SerializeField] private GameObject alignmentMenu;
     [SerializeField] private GameObject newLabel;
 
 
@@ -37,7 +39,7 @@ public class Orchestrator : MonoBehaviour
     private WorldLoader worldLoader;
     private LabelLoader labelLoader;
 
-    private GameObject marker;
+    public GameObject marker {get; private set;}
     private GameObject labels;
     private GameObject buildings;
 
@@ -77,10 +79,11 @@ public class Orchestrator : MonoBehaviour
         marker.name = "Marker";
         marker.transform.position = new Vector3(0, 0, 0);
         marker.transform.rotation = Quaternion.Euler(new Vector3(0, 150, 0));
-        StartCoroutine(LoadAssets("Andreasturm"));
+        StartCoroutine(LoadAssets("Polyterrasse"));
 
         sceneSelection.SetActive(false);
         SetAdjustmentMode(false);
+        viewSettings.SetActive(true);
         SetFarClippingPlane(farClippingBound);
 #endif
     }
@@ -108,6 +111,7 @@ public class Orchestrator : MonoBehaviour
 
             // Disable the ViewSettings UI and set the material to opaque
             viewSettings.SetActive(false);
+            alignmentMenu.SetActive(true);
             MaterialHelper.SetTransparent(material);
         }
         else
