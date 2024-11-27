@@ -9,10 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class WorldLoader
-{   
-    private Material highlightMaterial;
-    private Material material;
-
+{  
     private Orchestrator orchestrator;
     private XRInteractionManager interactionManager;
 
@@ -24,11 +21,9 @@ public class WorldLoader
     public static readonly int Z_offset = 1200000;
     public static readonly int radius = 2500;
 
-    public WorldLoader(GameObject buildings, Material highlightMaterial, Material material, Orchestrator orchestrator, XRInteractionManager interactionManager)
+    public WorldLoader(GameObject buildings, Orchestrator orchestrator, XRInteractionManager interactionManager)
     {
         this.buildings = buildings;
-        this.highlightMaterial = highlightMaterial;
-        this.material = material;
         this.orchestrator = orchestrator;
         this.interactionManager = interactionManager;
     }
@@ -64,27 +59,25 @@ public class WorldLoader
         if(distance > radius)
             return null;
         
-        Material mat = highlight ? highlightMaterial : material;
+        Material mat = highlight ? orchestrator.highlightMaterial : orchestrator.material;
         GameObject building = SpawnMesh(mesh, mat);
 
-        if(!highlight) {
-            var colliderComponent = building.AddComponent<MeshCollider>();
-            colliderComponent.enabled = enableColliders;
-            
-            var meshRenderer = building.GetComponent<MeshRenderer>();
-            var interactable = building.AddComponent<XRSimpleInteractable>();
-            interactable.interactionManager = this.interactionManager;
-            interactable.hoverEntered.AddListener(_ => meshRenderer.material = highlightMaterial);
-            interactable.hoverExited.AddListener(_ => meshRenderer.material = material);
+        var colliderComponent = building.AddComponent<MeshCollider>();
+        colliderComponent.enabled = enableColliders;
+        
+        var meshRenderer = building.GetComponent<MeshRenderer>();
+        var interactable = building.AddComponent<XRSimpleInteractable>();
+        interactable.interactionManager = this.interactionManager;
+        interactable.hoverEntered.AddListener(_ => HoverEnteredBuilding(meshRenderer, highlight));
+        interactable.hoverExited.AddListener(_ => HoverExitedBuilding(meshRenderer, highlight));
 
-            interactable.selectExited.AddListener(_ => SelectedBuilding(building, mesh));
-        }
+        interactable.selectExited.AddListener(_ => SelectedBuilding(building, mesh, highlight));
 
         return building;
     }
 
     GameObject SpawnTerrain(Mesh mesh) {
-        GameObject terrain = SpawnMesh(mesh, material);
+        GameObject terrain = SpawnMesh(mesh, orchestrator.material);
 
         var colliderComponent = terrain.AddComponent<MeshCollider>();
         colliderComponent.enabled = enableColliders;
@@ -115,15 +108,35 @@ public class WorldLoader
         return polyfaceMeshObj;
     }
 
-    private void SelectedBuilding(GameObject building, Mesh mesh) {
-        Debug.Log($"Building hit at: {mesh.bounds.center}");
-        AddLabelPayload payload = new AddLabelPayload();
-        payload.east = mesh.bounds.center.x + X_offset;
-        payload.north = mesh.bounds.center.z + Z_offset;
-        payload.height = mesh.bounds.center.y + 20;
-        payload.buildings = new List<string>(){mesh.name};        
+    private void HoverEnteredBuilding(MeshRenderer meshRenderer, bool highlighted) {
+        if(highlighted && orchestrator.EditMode)
+            meshRenderer.material = orchestrator.editMaterial;
+        
+        if(!highlighted && !orchestrator.EditMode)
+            meshRenderer.material = orchestrator.highlightMaterial;
+    }
+    
+    private void HoverExitedBuilding(MeshRenderer meshRenderer, bool highlighted) {
+        if(highlighted)
+            meshRenderer.material = orchestrator.highlightMaterial;
+        else
+            meshRenderer.material = orchestrator.material;
+    }
 
-        orchestrator.CreateLabel(payload, building);
+    private void SelectedBuilding(GameObject building, Mesh mesh, bool highlighted) {
+        Debug.Log($"Building hit at: {mesh.bounds.center}");
+        if(highlighted) {
+            if(orchestrator.EditMode)
+                orchestrator.EditLabel(Request.response.labels.Find(l => l.buildings.Contains(mesh.name)).name);
+        } else {
+            AddLabelPayload payload = new AddLabelPayload();
+            payload.east = mesh.bounds.center.x + X_offset;
+            payload.north = mesh.bounds.center.z + Z_offset;
+            payload.height = mesh.bounds.center.y + 20;
+            payload.buildings = new List<string>(){mesh.name};        
+
+            orchestrator.CreateLabel(payload, building);
+        }
     }
 
     private void SelectedTerrain(GameObject terrain) {

@@ -22,7 +22,7 @@ public class EditLabelsItem : MonoBehaviour
     }
 
     private void edit() {
-        gameObject.GetComponentInParent<EditLabels>().InitiateEdit(textField.text);
+        gameObject.GetComponentInParent<EditLabels>().EditButtonClicked(textField.text);
     }
 
     private void delete() {

@@ -29,6 +29,7 @@ public class Orchestrator : MonoBehaviour
     [SerializeField] private Shader transparentShader;
     public Material material; // material for non-labeled buildings
     public Material highlightMaterial; // material for labeled buildings
+    public Material editMaterial; // material for hovered buildings in edit mode
     [SerializeField] private Material textMaterial;
     [SerializeField] private ARAnchorManager anchorManager;
 
@@ -53,8 +54,7 @@ public class Orchestrator : MonoBehaviour
     private MagicLeapInput.ControllerActions _controllerActions;
 
     private bool AdjustmentMode = false;
-    private bool EditMode = false;
-
+    public bool EditMode {get; private set;} = false;
 
     void Start()
     {
@@ -62,7 +62,7 @@ public class Orchestrator : MonoBehaviour
         buildings = new GameObject("buildings");
 
         spatialAnchors = new SpatialAnchors(anchorManager);
-        worldLoader = new WorldLoader(buildings, highlightMaterial, material, this, interactionManager);
+        worldLoader = new WorldLoader(buildings, this, interactionManager);
         labelLoader = new LabelLoader(labels, textMaterial);
 
         // Initialize the InputActionAsset
@@ -79,11 +79,12 @@ public class Orchestrator : MonoBehaviour
         marker.name = "Marker";
         marker.transform.position = new Vector3(0, 0, 0);
         marker.transform.rotation = Quaternion.Euler(new Vector3(0, 150, 0));
-        StartCoroutine(LoadAssets("Andreasturm"));
+        StartCoroutine(LoadAssets("Polyterrasse"));
 
         sceneSelection.SetActive(false);
         SetAdjustmentMode(false);
         SetFarClippingPlane(farClippingBound);
+        viewSettings.SetActive(true);
 #endif
     }
 
@@ -99,18 +100,12 @@ public class Orchestrator : MonoBehaviour
         Debug.Log("Edit mode: " + value);
         if (value)
         {
-            // Disable building selection
-            worldLoader.DisableColliders();
-
             // Disable the ViewSettings UI and set the material to opaque
             viewSettings.SetActive(false);
             editLabels.SetActive(true);
         }
         else
         {
-            // Enable building selection
-            worldLoader.EnableColliders();
-
             // Enable the ViewSettings UI
             viewSettings.SetActive(false);
             editLabels.SetActive(false);
@@ -223,7 +218,17 @@ public class Orchestrator : MonoBehaviour
         StartCoroutine(labelLoader.SpawnLabels(Request.response));
     }
 
+    public void EditLabel(string name) {
+        worldLoader.DisableColliders();
+        editLabels.GetComponent<EditLabels>().InitiateEdit(name);
+    }
+
+    public void CancelLabelEdit() {
+        worldLoader.EnableColliders();
+    }
+
     public void CreateLabel(AddLabelPayload payload, GameObject building = null) {
+        viewSettings.SetActive(false);
         worldLoader.DisableColliders();
         newLabel.SetActive(true);
         newLabel.GetComponent<NewLabel>().InitiateCreation(payload, building);

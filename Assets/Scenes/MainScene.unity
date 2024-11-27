@@ -8597,6 +8597,7 @@ MonoBehaviour:
   transparentShader: {fileID: 15300, guid: 0000000000000000f000000000000000, type: 0}
   material: {fileID: 2100000, guid: f092af6c3c6694b05adafa8fbb09ceb8, type: 2}
   highlightMaterial: {fileID: 2100000, guid: 48e9eea92ace2408e95c7b8e089d28dd, type: 2}
+  editMaterial: {fileID: 2100000, guid: 7e8efcf58a4ac441d9d286b4ce95aa42, type: 2}
   textMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   anchorManager: {fileID: 842956704}
 --- !u!4 &2089831551

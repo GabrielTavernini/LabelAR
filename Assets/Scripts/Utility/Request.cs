@@ -18,7 +18,7 @@ public class Label
     public float z;
     public float distance;
     public string name;
-    // public HashSet<string> buildings;
+    public List<string> buildings;
 }
 
 public class Response
@@ -98,12 +98,40 @@ public class Request
     public static IEnumerator EditLabel(EditLabelPayload payload)
     {
         Debug.Log("Edit: " + payload.oldName);
-        yield return null;
+        string url = $"{baseUrl}/edit_label";
+        using (UnityWebRequest request = UnityWebRequest.Post(url, JsonConvert.SerializeObject(payload), "application/json"))
+        {
+            yield return request.SendWebRequest();
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("Error fetching data: " + request.error);
+            }
+            else
+            {
+                // Parse the JSON response
+                string jsonResponse = request.downloadHandler.text;
+                Debug.Log("Edit label response: " + jsonResponse);
+            }
+        }
     }
 
     public static IEnumerator DeleteLabel(DeleteLabelPayload payload)
     {
         Debug.Log("Delete: " + payload.name);
-        yield return null;
+        string url = $"{baseUrl}/delete_label";
+        using (UnityWebRequest request = UnityWebRequest.Post(url, JsonConvert.SerializeObject(payload), "application/json"))
+        {
+            yield return request.SendWebRequest();
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("Error fetching data: " + request.error);
+            }
+            else
+            {
+                // Parse the JSON response
+                string jsonResponse = request.downloadHandler.text;
+                Debug.Log("Delete label response: " + jsonResponse);
+            }
+        }
     }
 }

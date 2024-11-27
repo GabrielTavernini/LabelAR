@@ -47,6 +47,10 @@ public class EditLabels : MonoBehaviour
         item.GetComponent<EditLabelsItem>().setText(labelName);
     }
 
+    public void EditButtonClicked(string name) {
+        orchestrator.EditLabel(name);
+    }
+
     public void InitiateEdit(string name) {
         currentEditButton = GameObject.Find(buttonPrefix + name);
         currentEdit = new EditLabelPayload();
@@ -56,6 +60,8 @@ public class EditLabels : MonoBehaviour
         editPopup.SetActive(true);
         inputField.Select();
         inputField.ActivateInputField();
+        inputField.text = name;
+        inputField.caretPosition = inputField.text.Length;
         keyboard.SetActive(true);
     }
     private void Cancel() {
@@ -64,6 +70,7 @@ public class EditLabels : MonoBehaviour
         inputField.text = "";
         editPopup.SetActive(false);
         scrollView.SetActive(true);
+        orchestrator.CancelLabelEdit();
     }
 
     private void CommitEdit(string newName) {
@@ -81,6 +88,7 @@ public class EditLabels : MonoBehaviour
         GameObject.Find(currentEdit.oldName).name = newName;
         currentEditButton.GetComponent<EditLabelsItem>().setText(newName);
         currentEditButton.name = buttonPrefix + newName;
+        Request.response.labels.Find(l => l.name == name).name = newName;
 
         StartCoroutine(Request.EditLabel(currentEdit));
         Cancel();
@@ -92,8 +100,9 @@ public class EditLabels : MonoBehaviour
 
         Destroy(GameObject.Find(name));
         Destroy(GameObject.Find(buttonPrefix + name));
-        // Request.response.labels.Find(l => l.name == textField.text).buildings
-        //     .ForEach(b => GameObject.Find(b).GetComponent<MeshRenderer>().material = orchestrator.material);
+        Label label = Request.response.labels.Find(l => l.name == name);
+        label.buildings.ForEach(b => GameObject.Find(b).GetComponent<MeshRenderer>().material = orchestrator.material);
+        Request.response.labels.Remove(label);
 
         StartCoroutine(Request.DeleteLabel(payload));
     } 
