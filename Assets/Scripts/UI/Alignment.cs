@@ -20,7 +20,7 @@ public class Alignment : MonoBehaviour
     [SerializeField] private Orchestrator orchestrator;
 
     private List<Label> labels = new();
-    private List<Quaternion> orientations = new();
+    private List<double> orientations = new();
     private int step = 0;
 
     void Start()
@@ -54,7 +54,7 @@ public class Alignment : MonoBehaviour
         if(step >= 3) return;
 
         GameObject.Find(labels[step].name).GetComponent<TextMeshPro>().color = Color.grey;
-        orientations.Add(orchestrator.marker.transform.rotation);
+        orientations.Add(getAngle(labels[step].name));
         Debug.Log(labels[step].name + " Pos: " + GameObject.Find(labels[step].name).transform.position);
         Debug.Log(labels[step].name + " Ang: " + getAngle(labels[step].name));
 
@@ -72,7 +72,7 @@ public class Alignment : MonoBehaviour
 
         for(int i = 0; i < 3; i++) {
             points[i] =  GameObject.Find(labels[i].name).transform.position;
-            angles[i] = getAngle(labels[i].name);
+            angles[i] = orientations[i];
         }
         Vector3 newPos = FindPosition(points, angles);
         Debug.Log("Optimized Pos: " + newPos);
