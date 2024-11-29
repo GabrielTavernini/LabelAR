@@ -81,17 +81,48 @@ public class Alignment : MonoBehaviour
 
     Vector3 FindPosition(Vector3[] points, double[] radians)
     {
-        // Convert angles to radians
-        // double[] radians = angles.Select(a => a * Math.PI / 180.0).ToArray();
 
-        // Initial guess: centroid of points
-        double initialX = orchestrator.marker.transform.position.x;
-        double initialZ = orchestrator.marker.transform.position.z;
 
-        // Optimize position to minimize angular error
-        var result = OptimizePosition(points, radians, initialX, initialZ);
+        (double A, double B, double C)[] lines = new (double A, double B, double C)[3];
+        Vector3[] intersections = new Vector3[3];
 
-        return result;
+        //Get equation of lines passing by the alignment points
+        for (int i=0; i < 3; i++){
+            lines[i] = GetLineEquation((points[i].x, points[i].z), radians[i]);
+        }
+        //Get intersections between lines
+        for (int i=0; i < 3; i++){
+            intersections[i] = FindIntersection(lines[i], lines[(i+1)%3], orchestrator.marker.transform.position.y);
+        }
+        //Find barycenter of intersection points
+        return FindBarycenter(intersections[0], intersections[1], intersections[2]);
+    }
+
+    (double A, double B, double C) GetLineEquation((double x, double y) point, double radians)
+    {
+        double dx = Math.Cos(radians);
+        double dy = Math.Sin(radians);
+
+        double A = -dy;
+        double B = dx;
+        double C = -(A * point.x + B * point.y);
+
+        return (A, B, C);
+    }
+    Vector3 FindIntersection((double A, double B, double C) line1, (double A, double B, double C) line2, double height){
+        double det = line1.A * line2.B - line2.A * line1.B;
+        if (Math.Abs(det) < 1e-9)
+        {
+            return Vector3.negativeInfinity;
+        }
+        double x = (line2.B * -line1.C - line1.B * -line2.C) / det;
+        double z = (line1.A * -line2.C - line2.A * -line1.C) / det;
+        return new Vector3((float)x, (float)height, (float)z);
+    }
+
+    Vector3 FindBarycenter(Vector3 v1, Vector3 v2, Vector3 v3)
+    {
+        return (v1 + v2 + v3) / 3.0f;
     }
 
     // TODO: THIS DOESN'T CONVERGE TO THE CORRECT POINT, IMPLEMENT AN ACTUAL OPTIMIZATION ALGO
