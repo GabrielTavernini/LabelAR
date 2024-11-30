@@ -63,6 +63,7 @@ public class Request
             if (request.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError("Error fetching data: " + request.error);
+                response = null;
             }
             else
             {

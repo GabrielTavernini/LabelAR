@@ -21,6 +21,7 @@ public class Orchestrator : MonoBehaviour
     [SerializeField] private GameObject viewSettings;
     [SerializeField] private GameObject editLabels;
     [SerializeField] private GameObject newLabel;
+    [SerializeField] private GameObject connectionError;
 
 
     [SerializeField] private GameObject markerVisualPrefab;
@@ -187,6 +188,18 @@ public class Orchestrator : MonoBehaviour
         Debug.Log(builder.ToString());
 
         yield return Request.Load(mapName);
+        
+        if (Request.response == null) 
+            connectionError.SetActive(true);
+
+        while (Request.response == null) 
+        {
+            yield return new WaitForSeconds(1);
+            yield return Request.Load(mapName);
+            
+        }
+        connectionError.SetActive(false);
+        
         SetFarClippingPlane(Request.response.visibility);
         SpawnWorld();
         SpawnLabels();
@@ -214,8 +227,9 @@ public class Orchestrator : MonoBehaviour
         labels.transform.parent = marker.transform;
         labels.transform.localPosition = new Vector3();
         labels.transform.localRotation = Quaternion.identity;
-
+        
         StartCoroutine(labelLoader.SpawnLabels(Request.response));
+        
     }
 
     public void EditLabel(string name) {
