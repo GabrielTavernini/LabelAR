@@ -29,11 +29,12 @@ public class Alignment : MonoBehaviour
         downButton.onClick.AddListener(downClick);
         nextButton.onClick.AddListener(nextClick);
 
+        labels.Add(Request.response.labels[0]);
         labels.Add(Request.response.labels[1]);
         labels.Add(Request.response.labels[2]);
-        labels.Add(Request.response.labels[3]);
+        Debug.Log($"Triangulation Labels: {labels[0].name}, {labels[1].name}, {labels[2].name}");
         
-        GameObject.Find(labels[step].name).GetComponent<TextMeshPro>().color = Color.red;
+        highlightLabel(labels[step]);
     }
 
     void upClick() {
@@ -50,20 +51,34 @@ public class Alignment : MonoBehaviour
         return Math.Atan2(to.y, to.x);
     }
 
+    void highlightLabel(Label label) {
+        foreach(string meshId in label.buildings)
+            if(GameObject.Find(meshId) != null)
+                GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.editMaterial;
+    }
+
+    void restoreLabel(Label label) {
+        foreach(string meshId in label.buildings)
+            if(GameObject.Find(meshId) != null)
+                GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
+    }
+
     void nextClick() {
         if(step >= 3) return;
 
-        GameObject.Find(labels[step].name).GetComponent<TextMeshPro>().color = Color.grey;
+        restoreLabel(labels[step]);
         orientations.Add(getAngle(labels[step].name));
         Debug.Log(labels[step].name + " Pos: " + GameObject.Find(labels[step].name).transform.position);
         Debug.Log(labels[step].name + " Ang: " + getAngle(labels[step].name));
 
         step++;
         
-        if(step < 3)
-            GameObject.Find(labels[step].name).GetComponent<TextMeshPro>().color = Color.red;
-        else
+        if(step < 3) {
+            highlightLabel(labels[step]);
+        } else {
+            nextButton.gameObject.SetActive(false);
             triangulate();
+        }
     }
 
     void triangulate() {
@@ -77,6 +92,7 @@ public class Alignment : MonoBehaviour
         Vector3 newPos = FindPosition(points, angles);
         Debug.Log("Optimized Pos: " + newPos);
         Debug.Log("Error: " + CalculateTotalError(points, angles, newPos.x, newPos.z));
+        orchestrator.marker.transform.position += newPos;
     }
 
     Vector3 FindPosition(Vector3[] points, double[] radians)
