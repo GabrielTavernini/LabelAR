@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8696668219472673387}
   - component: {fileID: 6838468259105511086}
   m_Layer: 5
-  m_Name: SpaceButton
+  m_Name: SpaceItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
