@@ -14,11 +14,13 @@ using Vector3 = UnityEngine.Vector3;
 using Quaternion = UnityEngine.Quaternion;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using TMPro;
 
 public class Orchestrator : MonoBehaviour
 {
     [SerializeField] private GameObject sceneSelection;
     [SerializeField] private GameObject viewSettings;
+    [SerializeField] private GameObject alignmentMenu;
     [SerializeField] private GameObject editLabels;
     [SerializeField] private GameObject newLabel;
     [SerializeField] private GameObject connectionError;
@@ -40,7 +42,7 @@ public class Orchestrator : MonoBehaviour
     private WorldLoader worldLoader;
     private LabelLoader labelLoader;
 
-    private GameObject marker;
+    public GameObject marker {get; private set;}
     private GameObject labels;
     private GameObject buildings;
 
@@ -84,6 +86,7 @@ public class Orchestrator : MonoBehaviour
 
         sceneSelection.SetActive(false);
         SetAdjustmentMode(false);
+        viewSettings.SetActive(true);
         SetFarClippingPlane(farClippingBound);
         viewSettings.SetActive(true);
 #endif
@@ -129,6 +132,7 @@ public class Orchestrator : MonoBehaviour
 
             // Disable the ViewSettings UI and set the material to opaque
             viewSettings.SetActive(false);
+            alignmentMenu.SetActive(true);
             MaterialHelper.SetTransparent(material);
         }
         else
