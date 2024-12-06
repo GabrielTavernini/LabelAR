@@ -29,20 +29,26 @@ public class Alignment : MonoBehaviour
         downButton.onClick.AddListener(downClick);
         nextButton.onClick.AddListener(nextClick);
 
-        labels.Add(Request.response.labels[0]);
         labels.Add(Request.response.labels[1]);
         labels.Add(Request.response.labels[2]);
+        labels.Add(Request.response.labels[3]);
         Debug.Log($"Triangulation Labels: {labels[0].name}, {labels[1].name}, {labels[2].name}");
-        
+
+        init();
+    }
+
+    public void init() {
+        step = 0;
         highlightLabel(labels[step]);
+        nextButton.gameObject.SetActive(true);
     }
 
     void upClick() {
-        orchestrator.marker.transform.position += new Vector3(0, 0.5f, 0);
+        orchestrator.marker.transform.position += new Vector3(0, 0.1f, 0);
     }
 
     void downClick() {
-        orchestrator.marker.transform.position -= new Vector3(0, 0.5f, 0);
+        orchestrator.marker.transform.position -= new Vector3(0, 0.1f, 0);
     }
     
     double getAngle(string label) {
@@ -61,6 +67,13 @@ public class Alignment : MonoBehaviour
         foreach(string meshId in label.buildings)
             if(GameObject.Find(meshId) != null)
                 GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
+    }
+
+    public void restoreLabels() {
+        foreach(Label label in labels) 
+            foreach(string meshId in label.buildings)
+                if(GameObject.Find(meshId) != null)
+                    GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
     }
 
     void nextClick() {
@@ -139,37 +152,6 @@ public class Alignment : MonoBehaviour
     Vector3 FindBarycenter(Vector3 v1, Vector3 v2, Vector3 v3)
     {
         return (v1 + v2 + v3) / 3.0f;
-    }
-
-    // TODO: THIS DOESN'T CONVERGE TO THE CORRECT POINT, IMPLEMENT AN ACTUAL OPTIMIZATION ALGO
-    Vector3 OptimizePosition(Vector3[] points, double[] angles, double startX, double startZ)
-    {
-        const double tolerance = 10e-9;
-        const double stepSize = 0.1;
-        double currentX = startX, currentZ = startZ;
-        double error = CalculateTotalError(points, angles, currentX, currentZ);
-
-        while (true)
-        {
-            // Gradient descent: calculate partial derivatives
-            double gradX = (CalculateTotalError(points, angles, currentX + stepSize, currentZ) - error) / stepSize;
-            double gradZ = (CalculateTotalError(points, angles, currentX, currentZ + stepSize) - error) / stepSize;
-
-            // Update position
-            currentX -= stepSize * gradX;
-            currentZ -= stepSize * gradZ;
-
-            // Recalculate error
-            double newError = CalculateTotalError(points, angles, currentX, currentZ);
-
-            // Check for convergence
-            if (Math.Abs(newError - error) < tolerance)
-                break;
-
-            error = newError;
-        }
-
-        return new Vector3((float)currentX, orchestrator.marker.transform.position.y, (float)currentZ);
     }
 
     double CalculateTotalError(Vector3[] points, double[] angles, double x, double z)

@@ -82,7 +82,7 @@ public class Orchestrator : MonoBehaviour
         marker.name = "Marker";
         marker.transform.position = new Vector3(0, 0, 0);
         marker.transform.rotation = Quaternion.Euler(new Vector3(0, 150, 0));
-        StartCoroutine(LoadAssets("Polyterrasse"));
+        StartCoroutine(LoadAssets("WG7"));
 
         sceneSelection.SetActive(false);
         SetAdjustmentMode(false);
@@ -110,6 +110,8 @@ public class Orchestrator : MonoBehaviour
         }
         else
         {
+            CancelLabelEdit();
+
             // Enable the ViewSettings UI
             viewSettings.SetActive(false);
             editLabels.SetActive(false);
@@ -132,16 +134,15 @@ public class Orchestrator : MonoBehaviour
 
             // Disable the ViewSettings UI and set the material to opaque
             viewSettings.SetActive(false);
-            alignmentMenu.SetActive(true);
+            StartAlignment();
             MaterialHelper.SetTransparent(material);
         }
         else
         {
             // Align the Origin Marker with the spatial anchor
 #if !UNITY_EDITOR
-            marker.transform.parent = spatialAnchors.anchor.transform;
-            marker.transform.localPosition = new Vector3();
-            marker.transform.localRotation = Quaternion.identity;
+            marker.transform.position = spatialAnchors.anchor.transform.position;
+            marker.transform.rotation = spatialAnchors.anchor.transform.rotation;
 #endif
 
             // Disable Adjustment interaction on the marker
@@ -151,9 +152,17 @@ public class Orchestrator : MonoBehaviour
             // Enable building selection
             worldLoader.EnableColliders();
 
-            // Enable the ViewSettings UI
-            viewSettings.SetActive(false);
+            // Disable the AlignmentMenu UI
+            alignmentMenu.GetComponent<Alignment>().restoreLabels();
+            alignmentMenu.SetActive(false);
             MaterialHelper.SetFullyTransparent(material, transparentShader);
+        }
+    }
+
+    void StartAlignment() {
+        if(Request.response != null) {
+            alignmentMenu.SetActive(true);
+            alignmentMenu.GetComponent<Alignment>().init();
         }
     }
 
@@ -203,6 +212,7 @@ public class Orchestrator : MonoBehaviour
             
         }
         connectionError.SetActive(false);
+        if(AdjustmentMode) StartAlignment();
         
         SetFarClippingPlane(Request.response.visibility);
         SpawnWorld();
@@ -331,16 +341,18 @@ public class Orchestrator : MonoBehaviour
 
     private void OnMenuClick(InputAction.CallbackContext obj)
     {
-        if (!AdjustmentMode)
+        if (!AdjustmentMode && !connectionError.activeSelf)
         {
             if(EditMode) SetEditMode(false);
+            if(newLabel.activeSelf) CancelLabelCreation();
             viewSettings.SetActive(!viewSettings.activeSelf);
         }
     }
 
     private void OnTriggerClick(InputAction.CallbackContext obj)
     {
-        if (!AdjustmentMode && !EditMode)
+        if (!AdjustmentMode && !EditMode && Request.response != null 
+            && !viewSettings.activeSelf && !newLabel.activeSelf)
         {
             Vector3 direction = GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().rayEndPoint;
             direction.Normalize();

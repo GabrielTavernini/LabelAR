@@ -125,8 +125,8 @@ public class WorldLoader
 
     private void SelectedBuilding(GameObject building, Mesh mesh, bool highlighted) {
         Debug.Log($"Building hit at: {mesh.bounds.center}");
-        if(highlighted) {
-            if(orchestrator.EditMode)
+        if(orchestrator.EditMode) {
+            if(highlighted)
                 orchestrator.EditLabel(Request.response.labels.Find(l => l.buildings.Contains(mesh.name)).name);
         } else {
             AddLabelPayload payload = new AddLabelPayload();
