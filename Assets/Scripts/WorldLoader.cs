@@ -140,16 +140,18 @@ public class WorldLoader
     }
 
     private void SelectedTerrain(GameObject terrain) {
-        GameObject.FindAnyObjectByType<XRRayInteractor>().TryGetCurrent3DRaycastHit(out RaycastHit raycastHit);
-        Debug.Log($"Terrain hit at: {raycastHit.point}");
+        if(!orchestrator.EditMode) {
+            GameObject.FindAnyObjectByType<XRRayInteractor>().TryGetCurrent3DRaycastHit(out RaycastHit raycastHit);
+            Debug.Log($"Terrain hit at: {raycastHit.point}");
 
-        AddLabelPayload payload = new AddLabelPayload();
-        Vector3 rayHitPoint = Quaternion.Inverse(buildings.transform.rotation) * raycastHit.point;
-        payload.east = rayHitPoint.x + Request.response.coordinates.east;
-        payload.north = rayHitPoint.z + Request.response.coordinates.north;
-        payload.height = rayHitPoint.y + Request.response.coordinates.altitude + 50;
-        payload.buildings = new List<string>(){};        
+            AddLabelPayload payload = new AddLabelPayload();
+            Vector3 rayHitPoint = Quaternion.Inverse(buildings.transform.rotation) * raycastHit.point;
+            payload.east = rayHitPoint.x + Request.response.coordinates.east;
+            payload.north = rayHitPoint.z + Request.response.coordinates.north;
+            payload.height = rayHitPoint.y + Request.response.coordinates.altitude + 50;
+            payload.buildings = new List<string>(){};        
 
-        orchestrator.CreateLabel(payload);
+            orchestrator.CreateLabel(payload);
+        }
     }
 }
