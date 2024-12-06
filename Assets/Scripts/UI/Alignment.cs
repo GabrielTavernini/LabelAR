@@ -31,7 +31,7 @@ public class Alignment : MonoBehaviour
 
         labels.Add(Request.response.labels[1]);
         labels.Add(Request.response.labels[2]);
-        labels.Add(Request.response.labels[3]);
+        labels.Add(Request.response.labels[4]);
         Debug.Log($"Triangulation Labels: {labels[0].name}, {labels[1].name}, {labels[2].name}");
 
         init();
@@ -102,13 +102,13 @@ public class Alignment : MonoBehaviour
             points[i] =  GameObject.Find(labels[i].name).transform.position;
             angles[i] = orientations[i];
         }
-        Vector3 newPos = FindPosition(points, angles);
+        Vector2 newPos = FindPosition(points, angles);
         Debug.Log("Optimized Pos: " + newPos);
-        Debug.Log("Error: " + CalculateTotalError(points, angles, newPos.x, newPos.z));
-        orchestrator.marker.transform.position += newPos;
+        Debug.Log("Error: " + CalculateTotalError(points, angles, newPos.x, newPos.y));
+        orchestrator.marker.transform.position += new Vector3(newPos.x, 0, newPos.y);
     }
 
-    Vector3 FindPosition(Vector3[] points, double[] radians)
+    Vector2 FindPosition(Vector3[] points, double[] radians)
     {
 
 
@@ -121,7 +121,7 @@ public class Alignment : MonoBehaviour
         }
         //Get intersections between lines
         for (int i=0; i < 3; i++){
-            intersections[i] = FindIntersection(lines[i], lines[(i+1)%3], orchestrator.marker.transform.position.y);
+            intersections[i] = FindIntersection(lines[i], lines[(i+1)%3]);
         }
         //Find barycenter of intersection points
         return FindBarycenter(intersections[0], intersections[1], intersections[2]);
@@ -138,18 +138,18 @@ public class Alignment : MonoBehaviour
 
         return (A, B, C);
     }
-    Vector3 FindIntersection((double A, double B, double C) line1, (double A, double B, double C) line2, double height){
+    Vector2 FindIntersection((double A, double B, double C) line1, (double A, double B, double C) line2){
         double det = line1.A * line2.B - line2.A * line1.B;
         if (Math.Abs(det) < 1e-9)
         {
-            return Vector3.negativeInfinity;
+            return Vector2.negativeInfinity;
         }
         double x = (line2.B * -line1.C - line1.B * -line2.C) / det;
         double z = (line1.A * -line2.C - line2.A * -line1.C) / det;
-        return new Vector3((float)x, (float)height, (float)z);
+        return new Vector2((float)x, (float)z);
     }
 
-    Vector3 FindBarycenter(Vector3 v1, Vector3 v2, Vector3 v3)
+    Vector2 FindBarycenter(Vector2 v1, Vector2 v2, Vector2 v3)
     {
         return (v1 + v2 + v3) / 3.0f;
     }

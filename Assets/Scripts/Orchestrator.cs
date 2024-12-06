@@ -134,15 +134,16 @@ public class Orchestrator : MonoBehaviour
 
             // Disable the ViewSettings UI and set the material to opaque
             viewSettings.SetActive(false);
-            StartAlignment();
+            TryStartAlignment();
             MaterialHelper.SetTransparent(material);
         }
         else
         {
             // Align the Origin Marker with the spatial anchor
 #if !UNITY_EDITOR
-            marker.transform.position = spatialAnchors.anchor.transform.position;
-            marker.transform.rotation = spatialAnchors.anchor.transform.rotation;
+            marker.transform.parent = spatialAnchors.anchor.transform;
+            marker.transform.localPosition = new Vector3();
+            marker.transform.localRotation = Quaternion.identity;
 #endif
 
             // Disable Adjustment interaction on the marker
@@ -159,8 +160,8 @@ public class Orchestrator : MonoBehaviour
         }
     }
 
-    void StartAlignment() {
-        if(Request.response != null) {
+    public void TryStartAlignment() {
+        if(Request.response != null && AdjustmentMode) {
             alignmentMenu.SetActive(true);
             alignmentMenu.GetComponent<Alignment>().init();
         }
@@ -212,7 +213,6 @@ public class Orchestrator : MonoBehaviour
             
         }
         connectionError.SetActive(false);
-        if(AdjustmentMode) StartAlignment();
         
         SetFarClippingPlane(Request.response.visibility);
         SpawnWorld();

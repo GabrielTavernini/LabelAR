@@ -50,8 +50,10 @@ public class WorldLoader
         foreach (var mesh in Resources.LoadAll<Mesh>("Buildings/")) {
             bool highlight = highlightedBuildings.Contains(mesh.name);
             SpawnBuilding(mesh, highlight);
-            if(counter++ % 500 == 0) yield return null;
+            if(counter++ % 400 == 0) yield return null;
         }
+
+        orchestrator.TryStartAlignment();
     }
 
     GameObject SpawnBuilding(Mesh mesh, bool highlight) {
