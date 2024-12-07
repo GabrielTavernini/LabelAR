@@ -16,6 +16,9 @@ public class SceneSelection2 : MonoBehaviour
     [SerializeField] private GameObject itemPrefab;
     [SerializeField] private RectTransform scrollViewContent;
     [SerializeField] private Orchestrator orchestrator;
+    [SerializeField] private Button helpButton;
+    [SerializeField] private Button closeButton;
+    [SerializeField] private GameObject helpSceneSelection;
 
     private LocalizationMap[] maps;
     private MagicLeapLocalizationMapFeature localizationMapFeature;
@@ -24,6 +27,8 @@ public class SceneSelection2 : MonoBehaviour
 
     void Start()
     {
+        helpButton.onClick.AddListener(OpenHelp);
+        closeButton.onClick.AddListener(CloseHelp);
 #if UNITY_EDITOR
         createItem("Polyterrasse");
         createItem("Andreasturm");
@@ -67,7 +72,15 @@ public class SceneSelection2 : MonoBehaviour
         Debug.Log($"Localize request result: {result}");
         orchestrator.StartCoroutine(orchestrator.Open(name));
     }
+    public void OpenHelp()
+    {
+        helpSceneSelection.SetActive(true);
+    }
 
+    public void CloseHelp()
+    {
+        helpSceneSelection.SetActive(false);
+    }
     // Update is called once per frame
     void Update()
     {

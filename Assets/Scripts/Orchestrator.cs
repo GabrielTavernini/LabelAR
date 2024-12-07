@@ -24,6 +24,7 @@ public class Orchestrator : MonoBehaviour
     [SerializeField] private GameObject editLabels;
     [SerializeField] private GameObject newLabel;
     [SerializeField] private GameObject connectionError;
+    
 
 
     [SerializeField] private GameObject markerVisualPrefab;

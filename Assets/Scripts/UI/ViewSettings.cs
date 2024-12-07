@@ -20,8 +20,11 @@ public class ViewSettings : MonoBehaviour
     [SerializeField] private Button solidButton;
     [SerializeField] private Button transparentButton;
     [SerializeField] private Button semiTransparentButton;
+    [SerializeField] private Button helpButton;
+    [SerializeField] private Button closeButton;
     [SerializeField] private Toggle visibilityToggle;
     [SerializeField] private Toggle occlusionToggle;
+    [SerializeField] private GameObject helpViewSettings;
 
     void Start()
     {
@@ -33,6 +36,8 @@ public class ViewSettings : MonoBehaviour
         occlusionToggle.onValueChanged.AddListener(ToggleOcclusion);
         editButton.onClick.AddListener(SetEdit);
         adjustButton.onClick.AddListener(SetAdjust);
+        helpButton.onClick.AddListener(OpenHelp);
+        closeButton.onClick.AddListener(CloseHelp);
     }
 
     public void SetSolid()
@@ -68,6 +73,16 @@ public class ViewSettings : MonoBehaviour
     public void ToggleOcclusion(bool value)
     {
         orchestrator.SetOcclusion(value);
+    }
+
+    public void OpenHelp()
+    {
+        helpViewSettings.SetActive(true);
+    }
+
+    public void CloseHelp()
+    {
+        helpViewSettings.SetActive(false);
     }
 
     void Update()
