@@ -19,7 +19,8 @@ public class WorldLoader
 
     public static readonly int X_offset = 2600000;
     public static readonly int Z_offset = 1200000;
-    public static readonly int radius = 2500;
+    public static readonly int radius = 2000;
+    public static readonly int colliderRadius = 1000;
 
     public WorldLoader(GameObject buildings, Orchestrator orchestrator, XRInteractionManager interactionManager)
     {
@@ -28,15 +29,19 @@ public class WorldLoader
         this.interactionManager = interactionManager;
     }
 
-    public void EnableColliders() {
+    public void EnableColliders(bool fast = true) {
         enableColliders = true;
-        foreach(MeshCollider collider in buildings.GetComponentsInChildren<MeshCollider>(true))
-            collider.enabled = true;
+        if(!fast)
+            foreach(MeshCollider collider in buildings.GetComponentsInChildren<MeshCollider>(true))
+                collider.enabled = true;
+
     }
 
-    public void DisableColliders() {
-        foreach(MeshCollider collider in buildings.GetComponentsInChildren<MeshCollider>(true))
-            collider.enabled = false;
+    public void DisableColliders(bool fast = true) {
+        enableColliders = false;
+        if(!fast)
+            foreach(MeshCollider collider in buildings.GetComponentsInChildren<MeshCollider>(true))
+                collider.enabled = false;
     }
   
     public IEnumerator GenerateWorld(HashSet<string> highlightedBuildings)
@@ -64,16 +69,16 @@ public class WorldLoader
         Material mat = highlight ? orchestrator.highlightMaterial : orchestrator.material;
         GameObject building = SpawnMesh(mesh, mat);
 
-        var colliderComponent = building.AddComponent<MeshCollider>();
-        colliderComponent.enabled = enableColliders;
-        
         var meshRenderer = building.GetComponent<MeshRenderer>();
-        var interactable = building.AddComponent<XRSimpleInteractable>();
-        interactable.interactionManager = this.interactionManager;
-        interactable.hoverEntered.AddListener(_ => HoverEnteredBuilding(meshRenderer, highlight));
-        interactable.hoverExited.AddListener(_ => HoverExitedBuilding(meshRenderer, highlight));
+        if(distance < colliderRadius) {
+            building.AddComponent<MeshCollider>();
+            var interactable = building.AddComponent<XRSimpleInteractable>();
+            interactable.interactionManager = this.interactionManager;
+            interactable.hoverEntered.AddListener(_ => HoverEnteredBuilding(meshRenderer, highlight));
+            interactable.hoverExited.AddListener(_ => HoverExitedBuilding(meshRenderer, highlight));
 
-        interactable.selectExited.AddListener(_ => SelectedBuilding(building, mesh, highlight));
+            interactable.selectExited.AddListener(_ => SelectedBuilding(building, mesh, highlight));
+        }
 
         return building;
     }
@@ -81,9 +86,7 @@ public class WorldLoader
     GameObject SpawnTerrain(Mesh mesh) {
         GameObject terrain = SpawnMesh(mesh, orchestrator.material);
 
-        var colliderComponent = terrain.AddComponent<MeshCollider>();
-        colliderComponent.enabled = enableColliders;
-        
+        var colliderComponent = terrain.AddComponent<MeshCollider>();        
         var interactable = terrain.AddComponent<XRSimpleInteractable>();
         interactable.interactionManager = this.interactionManager;
         interactable.selectExited.AddListener(_ => SelectedTerrain(terrain));
@@ -111,6 +114,8 @@ public class WorldLoader
     }
 
     private void HoverEnteredBuilding(MeshRenderer meshRenderer, bool highlighted) {
+        if(!enableColliders) return;
+
         if(highlighted && orchestrator.EditMode)
             meshRenderer.material = orchestrator.editMaterial;
         
@@ -119,6 +124,8 @@ public class WorldLoader
     }
     
     private void HoverExitedBuilding(MeshRenderer meshRenderer, bool highlighted) {
+        if(!enableColliders) return;
+
         if(highlighted)
             meshRenderer.material = orchestrator.highlightMaterial;
         else
@@ -126,22 +133,29 @@ public class WorldLoader
     }
 
     private void SelectedBuilding(GameObject building, Mesh mesh, bool highlighted) {
+        if(!enableColliders) return;
+
         Debug.Log($"Building hit at: {mesh.bounds.center}");
         if(orchestrator.EditMode) {
-            if(highlighted)
-                orchestrator.EditLabel(Request.response.labels.Find(l => l.buildings.Contains(mesh.name)).name);
+            if(highlighted) {
+                string labelName = Request.response.labels.Find(l => l.buildings.Contains(mesh.name)).name;
+                orchestrator.EditLabel(labelName, building);
+            }
         } else {
             AddLabelPayload payload = new AddLabelPayload();
             payload.east = mesh.bounds.center.x + X_offset;
             payload.north = mesh.bounds.center.z + Z_offset;
             payload.height = mesh.bounds.center.y + 20;
             payload.buildings = new List<string>(){mesh.name};        
-
+            
+            Debug.Log("Selected Building: " + building);
             orchestrator.CreateLabel(payload, building);
         }
     }
 
     private void SelectedTerrain(GameObject terrain) {
+        if(!enableColliders) return;
+        
         if(!orchestrator.EditMode) {
             GameObject.FindAnyObjectByType<XRRayInteractor>().TryGetCurrent3DRaycastHit(out RaycastHit raycastHit);
             Debug.Log($"Terrain hit at: {raycastHit.point}");

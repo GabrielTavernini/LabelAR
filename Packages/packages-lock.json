@@ -7,7 +7,7 @@
       "dependencies": {}
     },
     "com.magicleap.unitysdk": {
-      "version": "file:/Users/ilboglions/MagicLeap/tools/unity/v2.5.0/com.magicleap.unitysdk.tgz",
+      "version": "file:/Users/gabriel/Development/Installs/MagicLeap/tools/unity/v2.5.0/com.magicleap.unitysdk.tgz",
       "depth": 0,
       "source": "local-tarball",
       "dependencies": {
@@ -30,6 +30,13 @@
         "com.unity.xr.interaction.toolkit": "2.2.0"
       },
       "hash": "626c7750650dd215f2229a5131a0e50794282364"
+    },
+    "com.nobi.roundedcorners": {
+      "version": "https://github.com/kirevdokimov/Unity-UI-Rounded-Corners.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "33135342e868201eb0d4cef821ecab90caca373e"
     },
     "com.unity.burst": {
       "version": "1.8.18",

@@ -24,6 +24,7 @@ public class Orchestrator : MonoBehaviour
     [SerializeField] private GameObject editLabels;
     [SerializeField] private GameObject newLabel;
     [SerializeField] private GameObject connectionError;
+    public GameObject keyboard;
     
 
 
@@ -83,7 +84,7 @@ public class Orchestrator : MonoBehaviour
         marker.name = "Marker";
         marker.transform.position = new Vector3(0, 0, 0);
         marker.transform.rotation = Quaternion.Euler(new Vector3(0, 150, 0));
-        StartCoroutine(LoadAssets("WG7"));
+        StartCoroutine(LoadAssets("Polyterrasse"));
 
         sceneSelection.SetActive(false);
         SetAdjustmentMode(false);
@@ -131,7 +132,7 @@ public class Orchestrator : MonoBehaviour
             marker.GetComponent<XRGrabInteractable>().interactionManager = interactionManager;
 
             // Disable building selection
-            worldLoader.DisableColliders();
+            worldLoader.DisableColliders(false);
 
             // Disable the ViewSettings UI and set the material to opaque
             viewSettings.SetActive(false);
@@ -152,7 +153,7 @@ public class Orchestrator : MonoBehaviour
             marker.GetComponent<XRGrabInteractable>().interactionManager = null;
 
             // Enable building selection
-            worldLoader.EnableColliders();
+            worldLoader.EnableColliders(false);
 
             // Disable the AlignmentMenu UI
             alignmentMenu.GetComponent<Alignment>().restoreLabels();
@@ -247,9 +248,9 @@ public class Orchestrator : MonoBehaviour
         
     }
 
-    public void EditLabel(string name) {
+    public void EditLabel(string name, GameObject building = null) {
         worldLoader.DisableColliders();
-        editLabels.GetComponent<EditLabels>().InitiateEdit(name);
+        editLabels.GetComponent<EditLabels>().InitiateEdit(name, building);
     }
 
     public void CancelLabelEdit() {
@@ -311,9 +312,11 @@ public class Orchestrator : MonoBehaviour
         label.x = relativePosition.x;
         label.y = relativePosition.y;
         label.z = relativePosition.z;
-
         label.distance = relativePosition.magnitude;
+        label.buildings = payload.buildings;
+
         labelLoader.SpawnLabel(label);
+        Request.response.labels.Add(label);
     }
 
     public IEnumerator SaveSpatialAnchor(Pose pose)
@@ -342,6 +345,11 @@ public class Orchestrator : MonoBehaviour
 
     private void OnMenuClick(InputAction.CallbackContext obj)
     {
+        BackToViewSettings();
+    }
+
+    public void BackToViewSettings()
+    {
         if (!AdjustmentMode && !connectionError.activeSelf)
         {
             if(EditMode) SetEditMode(false);
@@ -354,8 +362,10 @@ public class Orchestrator : MonoBehaviour
     {
         if (!AdjustmentMode && !EditMode && Request.response != null 
             && !viewSettings.activeSelf && !newLabel.activeSelf)
-        {
+        {   
             Vector3 direction = GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().rayEndPoint;
+            if(direction.magnitude <= WorldLoader.colliderRadius) return;
+
             direction.Normalize();
             direction *= farClippingBound*5;
 

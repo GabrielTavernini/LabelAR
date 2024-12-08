@@ -77,7 +77,7 @@ public class ViewSettings : MonoBehaviour
 
     public void OpenHelp()
     {
-        helpViewSettings.SetActive(true);
+        helpViewSettings.SetActive(!helpViewSettings.activeSelf);
     }
 
     public void CloseHelp()

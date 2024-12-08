@@ -9,8 +9,9 @@
     }
   ],
   "dependencies": {
-    "com.magicleap.unitysdk": "file:/Users/ilboglions/MagicLeap/tools/unity/v2.5.0/com.magicleap.unitysdk.tgz",
+    "com.magicleap.unitysdk": "file:/Users/gabriel/Development/Installs/MagicLeap/tools/unity/v2.5.0/com.magicleap.unitysdk.tgz",
     "com.magicleap.xrkeyboard": "https://github.com/magicleap/MagicLeapXRKeyboard.git?path=/Packages/MagicLeapXRKeyboard",
+    "com.nobi.roundedcorners": "https://github.com/kirevdokimov/Unity-UI-Rounded-Corners.git",
     "com.unity.collab-proxy": "2.5.2",
     "com.unity.feature.development": "1.0.1",
     "com.unity.nuget.newtonsoft-json": "3.2.1",

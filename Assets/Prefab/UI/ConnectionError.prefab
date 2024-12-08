@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7407200004979748197}
   - component: {fileID: 90945625761999861}
   - component: {fileID: 3373779522629255139}
+  - component: {fileID: -5948829850706139794}
   m_Layer: 5
   m_Name: ConnectionError
   m_TagString: Untagged
@@ -166,6 +167,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &-5948829850706139794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2767929752912695301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adb30198aa32dd140b5750692dd48104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 15
+  image: {fileID: 3373779522629255139}
 --- !u!1 &6420356170227981001
 GameObject:
   m_ObjectHideFlags: 0

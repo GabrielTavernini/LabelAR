@@ -74,7 +74,7 @@ public class SceneSelection2 : MonoBehaviour
     }
     public void OpenHelp()
     {
-        helpSceneSelection.SetActive(true);
+        helpSceneSelection.SetActive(!helpSceneSelection.activeSelf);
     }
 
     public void CloseHelp()

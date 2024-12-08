@@ -16,7 +16,6 @@ public class NewLabel : MonoBehaviour
     [SerializeField] private Orchestrator orchestrator;
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private Button cancelButton;
-    [SerializeField] private GameObject keyboard;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +31,11 @@ public class NewLabel : MonoBehaviour
     }
 
     private void Cancel() {
+        if(building != null)
+            building.GetComponent<MeshRenderer>().material = orchestrator.material;
+        
+        this.inputField.text = "";
+        orchestrator.keyboard.SetActive(false);
         orchestrator.CancelLabelCreation();
     }
 
@@ -39,15 +43,16 @@ public class NewLabel : MonoBehaviour
         this.payload = payload;
         this.building = building;
 
-        inputField.Select();
+        orchestrator.keyboard.SetActive(true);
         inputField.ActivateInputField();
-        keyboard.SetActive(true);
+        inputField.Select();
     }
 
     void CommitLabel(string inputText) {
         if(inputText.Trim().Length == 0) return;
         
         payload.name = inputText;
+        orchestrator.keyboard.SetActive(false);
         orchestrator.CommitLabel(payload, building);
 
         this.inputField.text = "";
