@@ -27,6 +27,7 @@ public class Response
     public List<Label> labels;
     public HashSet<string> buildings;
     public float visibility;
+    public List<string> alignment_labels;
 }
 
 public class AddLabelPayload

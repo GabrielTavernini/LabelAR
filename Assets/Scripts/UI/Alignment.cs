@@ -19,9 +19,12 @@ public class Alignment : MonoBehaviour
     [SerializeField] private Button nextButton;
     [SerializeField] private Orchestrator orchestrator;
 
-    private List<Label> labels = new();
+    private List<string> meshIds = new();
     private List<double> orientations = new();
+    Vector3[] points = new Vector3[3];
+    double[] angles = new double[3];
     private int step = 0;
+    private readonly string alignmentSphereName = "AlignmentSphere";
 
     void Start()
     {
@@ -29,17 +32,17 @@ public class Alignment : MonoBehaviour
         downButton.onClick.AddListener(downClick);
         nextButton.onClick.AddListener(nextClick);
 
-        labels.Add(Request.response.labels[1]);
-        labels.Add(Request.response.labels[2]);
-        labels.Add(Request.response.labels[4]);
-        Debug.Log($"Triangulation Labels: {labels[0].name}, {labels[1].name}, {labels[2].name}");
+        meshIds = new(Request.response.alignment_labels); 
+        while (meshIds.Count() < 3)
+            meshIds.Add("");
+        Debug.Log($"Triangulation Meshes: {meshIds[0]}, {meshIds[1]}, {meshIds[2]}");
 
         init();
     }
 
     public void init() {
         step = 0;
-        highlightLabel(labels[step]);
+        highlightLabel(meshIds[step]);
         nextButton.gameObject.SetActive(true);
     }
 
@@ -50,44 +53,77 @@ public class Alignment : MonoBehaviour
     void downClick() {
         orchestrator.marker.transform.position -= new Vector3(0, 0.1f, 0);
     }
+
+    Vector3 getClosestVertex(GameObject obj) {
+        Vector3 closestVertex = Vector3.zero;
+        float minDistance = Mathf.Infinity;
+        foreach(Vector3 vec in obj.GetComponent<MeshFilter>().mesh.vertices) {
+            if(vec.y < obj.GetComponent<MeshFilter>().mesh.bounds.center.y) continue;
+            Vector3 worldVertex = obj.transform.TransformPoint(vec);
+            float distance = Vector3.Distance(worldVertex, Vector3.zero);
+
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closestVertex = worldVertex;
+            }
+        }
+        return closestVertex;
+    }
     
-    double getAngle(string label) {
-        GameObject l = GameObject.Find(label);
-        Vector2 to = new Vector2(l.transform.position.x, l.transform.position.z);
+    double getAngle(string meshId) {
+        return getAngle(GameObject.Find(meshId).transform.position);
+    }
+
+    double getAngle(Vector3 position) {
+        Vector2 to = new Vector2(position.x, position.z);
         return Math.Atan2(to.y, to.x);
     }
 
-    void highlightLabel(Label label) {
-        foreach(string meshId in label.buildings)
-            if(GameObject.Find(meshId) != null)
-                GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.editMaterial;
+    void highlightLabel(string meshId) {
+        if(GameObject.Find(meshId) != null) {
+            Vector3 closestVertex = getClosestVertex(GameObject.Find(meshIds[step]));
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.name = alignmentSphereName;
+            sphere.transform.position = closestVertex;
+            sphere.transform.localScale = new Vector3(3f, 3f, 3f);
+            GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.editMaterial;
+        }
     }
 
-    void restoreLabel(Label label) {
-        foreach(string meshId in label.buildings)
-            if(GameObject.Find(meshId) != null)
-                GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
+    void restoreLabel(string meshId) {
+        if(GameObject.Find(meshId) != null) {
+            GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
+            Destroy(GameObject.Find(alignmentSphereName));
+        }
     }
 
     public void restoreLabels() {
-        foreach(Label label in labels) 
-            foreach(string meshId in label.buildings)
-                if(GameObject.Find(meshId) != null)
-                    GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
+        foreach(string meshId in meshIds)
+            if(GameObject.Find(meshId) != null)
+                GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
     }
 
     void nextClick() {
         if(step >= 3) return;
 
-        restoreLabel(labels[step]);
-        orientations.Add(getAngle(labels[step].name));
-        Debug.Log(labels[step].name + " Pos: " + GameObject.Find(labels[step].name).transform.position);
-        Debug.Log(labels[step].name + " Ang: " + getAngle(labels[step].name));
+        restoreLabel(meshIds[step]);
+        if(GameObject.Find(meshIds[step]) != null) {
+            Vector3 closestVertex = GameObject.Find(alignmentSphereName).transform.position;
+            points[step] = closestVertex;
+            angles[step] = getAngle(closestVertex);
+            // orientations.Add(getAngle(meshIds[step]));
+            Debug.Log(meshIds[step] + " Pos: " + GameObject.Find(meshIds[step]).transform.position);
+            Debug.Log(meshIds[step] + " Ang: " + getAngle(meshIds[step]));
+        } else {
+            orientations.Add(0);
+            Debug.Log("GameObject doesn't exist");
+        }
 
         step++;
         
         if(step < 3) {
-            highlightLabel(labels[step]);
+            highlightLabel(meshIds[step]);
         } else {
             nextButton.gameObject.SetActive(false);
             triangulate();
@@ -95,13 +131,13 @@ public class Alignment : MonoBehaviour
     }
 
     void triangulate() {
-        Vector3[] points = new Vector3[3];
-        double[] angles = new double[3];
+        // Vector3[] points = new Vector3[3];
+        // double[] angles = new double[3];
 
-        for(int i = 0; i < 3; i++) {
-            points[i] =  GameObject.Find(labels[i].name).transform.position;
-            angles[i] = orientations[i];
-        }
+        // for(int i = 0; i < 3; i++) {
+        //     points[i] =  GameObject.Find(meshIds[i]) != null ? GameObject.Find(meshIds[i]).transform.position : new Vector3();
+        //     angles[i] = orientations[i];
+        // }
         Vector2 newPos = FindPosition(points, angles);
         Debug.Log("Optimized Pos: " + newPos);
         Debug.Log("Error: " + CalculateTotalError(points, angles, newPos.x, newPos.y));
