@@ -92,16 +92,16 @@ public class Alignment : MonoBehaviour
     }
 
     void restoreLabel(string meshId) {
-        if(GameObject.Find(meshId) != null) {
-            GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
+        if(GameObject.Find(alignmentSphereName) != null)
             Destroy(GameObject.Find(alignmentSphereName));
-        }
+
+        if(GameObject.Find(meshId) != null) 
+            GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
     }
 
     public void restoreLabels() {
         foreach(string meshId in meshIds)
-            if(GameObject.Find(meshId) != null)
-                GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.highlightMaterial;
+            restoreLabel(meshId);
     }
 
     void nextClick() {
