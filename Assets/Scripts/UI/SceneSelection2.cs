@@ -24,29 +24,31 @@ public class SceneSelection2 : MonoBehaviour
     private MagicLeapLocalizationMapFeature localizationMapFeature;
     private Dictionary<string, LocalizationMap> mapsDictionary = new();
 
-    private readonly List<string> spaces = new List<string>{"Polyterrasse", "Andreasturm", "Bellevue", "WG", "Lindenhof"};
-
-
     void Start()
     {
         helpButton.onClick.AddListener(OpenHelp);
         closeButton.onClick.AddListener(CloseHelp);
 
-        foreach(string space in spaces)
-            createItem(space);
+        if(Orchestrator.DEMO) {
+            // Hardcoded spaces for the demo
+            foreach(string space in Request.spaces.Keys)
+                createItem(space);
+        }
 
         localizationMapFeature = OpenXRSettings.Instance.GetFeature<MagicLeapLocalizationMapFeature>();
         if (localizationMapFeature == null || !localizationMapFeature.enabled)
             return;
 
-        // XrResult result = localizationMapFeature.GetLocalizationMapsList(out maps);
-        // if (result == XrResult.Success) {
-        //     foreach(LocalizationMap map in maps) {
-        //         string name = map.Name.Split('\0')[0];
-        //         mapsDictionary.Add(name, map);
-        //         createItem(name);
-        //     }
-        // }
+        if(!Orchestrator.DEMO) {
+            XrResult result = localizationMapFeature.GetLocalizationMapsList(out maps);
+            if (result == XrResult.Success) {
+                foreach(LocalizationMap map in maps) {
+                    string name = map.Name.Split('\0')[0];
+                    mapsDictionary.Add(name, map);
+                    createItem(name);
+                }
+            }
+        }
         
     }
 

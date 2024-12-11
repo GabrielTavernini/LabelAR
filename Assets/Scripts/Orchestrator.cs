@@ -18,6 +18,7 @@ using TMPro;
 
 public class Orchestrator : MonoBehaviour
 {
+    public static readonly bool DEMO = true;
     [SerializeField] private GameObject sceneSelection;
     [SerializeField] private GameObject viewSettings;
     [SerializeField] private GameObject alignmentMenu;
@@ -85,7 +86,7 @@ public class Orchestrator : MonoBehaviour
         marker.name = "Marker";
         marker.transform.position = new Vector3(0, 0, 0);
         marker.transform.rotation = Quaternion.Euler(new Vector3(0, 150, 0));
-        StartCoroutine(LoadAssets("Polyterrasse"));
+        StartCoroutine(LoadAssets("Andreasturm"));
 
         sceneSelection.SetActive(false);
         SetAdjustmentMode(false);
