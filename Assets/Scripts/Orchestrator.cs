@@ -24,6 +24,7 @@ public class Orchestrator : MonoBehaviour
     [SerializeField] private GameObject editLabels;
     [SerializeField] private GameObject newLabel;
     [SerializeField] private GameObject connectionError;
+    [SerializeField] private ControllerHelper controllerHelper;
     public GameObject keyboard;
     
 
@@ -136,6 +137,7 @@ public class Orchestrator : MonoBehaviour
 
             // Disable the ViewSettings UI and set the material to opaque
             viewSettings.SetActive(false);
+            controllerHelper.SetMode(ControllerMode.Adjustment);
             TryStartAlignment();
             MaterialHelper.SetTransparent(material);
         }
@@ -159,6 +161,8 @@ public class Orchestrator : MonoBehaviour
             alignmentMenu.GetComponent<Alignment>().restoreLabels();
             alignmentMenu.SetActive(false);
             MaterialHelper.SetFullyTransparent(material, transparentShader);
+
+            controllerHelper.SetMode(ControllerMode.Labeling);
         }
     }
 
@@ -261,16 +265,19 @@ public class Orchestrator : MonoBehaviour
         viewSettings.SetActive(false);
         worldLoader.DisableColliders();
         newLabel.SetActive(true);
+        controllerHelper.SetMode(ControllerMode.Selecting);
         newLabel.GetComponent<NewLabel>().InitiateCreation(payload, building);
     }
 
     public void CancelLabelCreation() {
         newLabel.SetActive(false);
+        controllerHelper.SetMode(ControllerMode.Labeling);
         worldLoader.EnableColliders();
     }
 
     public void CommitLabel(AddLabelPayload payload, GameObject building = null) {
         newLabel.SetActive(false);
+        controllerHelper.SetMode(ControllerMode.Labeling);
         worldLoader.EnableColliders();
 
         Debug.Log("Sending post request: " + JsonConvert.SerializeObject(payload));
@@ -354,6 +361,7 @@ public class Orchestrator : MonoBehaviour
         {
             if(EditMode) SetEditMode(false);
             if(newLabel.activeSelf) CancelLabelCreation();
+            controllerHelper.SetMode(viewSettings.activeSelf ? ControllerMode.Labeling : ControllerMode.Menu);
             viewSettings.SetActive(!viewSettings.activeSelf);
         }
     }
