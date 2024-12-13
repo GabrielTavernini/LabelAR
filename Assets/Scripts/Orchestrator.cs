@@ -358,7 +358,7 @@ public class Orchestrator : MonoBehaviour
 
     public void BackToViewSettings()
     {
-        if (!AdjustmentMode && !connectionError.activeSelf)
+        if (!sceneSelection.activeSelf && !AdjustmentMode && !connectionError.activeSelf)
         {
             if(EditMode) SetEditMode(false);
             if(newLabel.activeSelf) CancelLabelCreation();
@@ -369,9 +369,13 @@ public class Orchestrator : MonoBehaviour
 
     private void OnTriggerClick(InputAction.CallbackContext obj)
     {
-        if (!AdjustmentMode && !EditMode && Request.response != null 
-            && !viewSettings.activeSelf && !newLabel.activeSelf)
-        {   
+        if (!sceneSelection.activeSelf
+        && !AdjustmentMode 
+        && !EditMode
+        && Request.response != null 
+        && !viewSettings.activeSelf
+        && !newLabel.activeSelf
+        ){   
             Vector3 direction = GameObject.Find("Game Controller").GetComponent<XRRayInteractor>().rayEndPoint;
             if(direction.magnitude <= WorldLoader.colliderRadius) return;
 

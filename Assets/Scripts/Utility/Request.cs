@@ -66,9 +66,8 @@ public class Request
     {
         if(Orchestrator.DEMO) {
             response = JsonConvert.DeserializeObject<Response>(spaces.GetValueOrDefault(mapName, "{}"));
-            yield return null;
+            yield break;
         }
-
 
         string url = $"{baseUrl}/get_labels?mapName={mapName}";
         using (UnityWebRequest request = UnityWebRequest.Get(url))
