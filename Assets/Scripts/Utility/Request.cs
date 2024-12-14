@@ -65,6 +65,7 @@ public class Request
     public static IEnumerator Load(string mapName)
     {
         if(Orchestrator.DEMO) {
+            Debug.Log("DEMO MODE: Skipping get_labels request");
             response = JsonConvert.DeserializeObject<Response>(spaces.GetValueOrDefault(mapName, "{}"));
             yield break;
         }
@@ -92,6 +93,11 @@ public class Request
 
     public static IEnumerator AddLabel(AddLabelPayload payload)
     {
+        if(Orchestrator.DEMO) {
+            Debug.Log("DEMO MODE: Skipping add_label request");
+            yield break;
+        }
+
         string url = $"{baseUrl}/add_label";
         using (UnityWebRequest request = UnityWebRequest.Post(url, JsonConvert.SerializeObject(payload), "application/json"))
         {
@@ -111,6 +117,11 @@ public class Request
 
     public static IEnumerator EditLabel(EditLabelPayload payload)
     {
+        if(Orchestrator.DEMO) {
+            Debug.Log("DEMO MODE: Skipping edit_label request");
+            yield break;
+        }
+
         Debug.Log("Edit: " + payload.oldName);
         string url = $"{baseUrl}/edit_label";
         using (UnityWebRequest request = UnityWebRequest.Post(url, JsonConvert.SerializeObject(payload), "application/json"))
@@ -131,6 +142,11 @@ public class Request
 
     public static IEnumerator DeleteLabel(DeleteLabelPayload payload)
     {
+        if(Orchestrator.DEMO) {
+            Debug.Log("DEMO MODE: Skipping delete_label request");
+            yield break;
+        }
+
         Debug.Log("Delete: " + payload.name);
         string url = $"{baseUrl}/delete_label";
         using (UnityWebRequest request = UnityWebRequest.Post(url, JsonConvert.SerializeObject(payload), "application/json"))

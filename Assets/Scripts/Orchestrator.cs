@@ -33,10 +33,12 @@ public class Orchestrator : MonoBehaviour
     [SerializeField] private GameObject markerVisualPrefab;
     [SerializeField] private XRInteractionManager interactionManager;
     [SerializeField] private GameObject occlusionManager;
-    [SerializeField] private Shader transparentShader;
+    public Shader transparentShader;
+    public Shader wireframeShader;
     public Material material; // material for non-labeled buildings
     public Material highlightMaterial; // material for labeled buildings
     public Material editMaterial; // material for hovered buildings in edit mode
+    public Material markerMaterial; // material for the marker
     [SerializeField] private Material textMaterial;
     [SerializeField] private ARAnchorManager anchorManager;
 
@@ -132,6 +134,7 @@ public class Orchestrator : MonoBehaviour
             Adjustment adjustment = marker.AddComponent<Adjustment>();
             adjustment.orchestrator = this;
             marker.GetComponent<XRGrabInteractable>().interactionManager = interactionManager;
+            MaterialHelper.SetTransparent(markerMaterial, alpha: 1.0f);
 
             // Disable building selection
             worldLoader.DisableColliders(false);
@@ -154,6 +157,7 @@ public class Orchestrator : MonoBehaviour
             // Disable Adjustment interaction on the marker
             Destroy(marker.GetComponent<Adjustment>());
             marker.GetComponent<XRGrabInteractable>().interactionManager = null;
+            MaterialHelper.SetTransparent(markerMaterial, alpha: 0.0f);
 
             // Enable building selection
             worldLoader.EnableColliders(false);
@@ -161,7 +165,7 @@ public class Orchestrator : MonoBehaviour
             // Disable the AlignmentMenu UI
             alignmentMenu.GetComponent<Alignment>().restoreLabels();
             alignmentMenu.SetActive(false);
-            MaterialHelper.SetFullyTransparent(material, transparentShader);
+            MaterialHelper.SetShader(material, transparentShader);
 
             controllerHelper.SetMode(ControllerMode.Labeling);
         }

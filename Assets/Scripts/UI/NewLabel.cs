@@ -34,7 +34,7 @@ public class NewLabel : MonoBehaviour
         if(building != null)
             building.GetComponent<MeshRenderer>().material = orchestrator.material;
         
-        this.inputField.text = "";
+        inputField.text = "";
         orchestrator.keyboard.SetActive(false);
         orchestrator.CancelLabelCreation();
     }
@@ -55,6 +55,6 @@ public class NewLabel : MonoBehaviour
         orchestrator.keyboard.SetActive(false);
         orchestrator.CommitLabel(payload, building);
 
-        this.inputField.text = "";
+        inputField.text = "";
     }
 }

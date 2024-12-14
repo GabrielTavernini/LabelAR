@@ -13,7 +13,6 @@ using UnityEngine.XR.OpenXR.NativeTypes;
 public class ViewSettings : MonoBehaviour
 {
     [SerializeField] private Orchestrator orchestrator;
-    [SerializeField] private Shader transparentShader;
 
     [SerializeField] private Button adjustButton;
     [SerializeField] private Button editButton;
@@ -47,7 +46,7 @@ public class ViewSettings : MonoBehaviour
 
     public void SetFullyTransparent()
     {
-        MaterialHelper.SetFullyTransparent(orchestrator.material, transparentShader);
+        MaterialHelper.SetShader(orchestrator.material, orchestrator.transparentShader);
     }
 
     public void SetTransparent()

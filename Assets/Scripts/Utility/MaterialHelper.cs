@@ -24,10 +24,10 @@ public static class MaterialHelper
         material.shader = Shader.Find("Standard");
     }
 
-    public static void SetFullyTransparent(Material material, Shader transparentShader)
+    public static void SetShader(Material material, Shader shader)
     {
         Color color = material.color;
-        material.shader = transparentShader;
+        material.shader = shader;
         material.color = color;
     }
 
