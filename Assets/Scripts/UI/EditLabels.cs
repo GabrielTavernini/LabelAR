@@ -125,7 +125,7 @@ public class EditLabels : MonoBehaviour
         Destroy(GameObject.Find(name));
         Destroy(GameObject.Find(buttonPrefix + name));
         Label label = Request.response.labels.Find(l => l.name == name);
-        label.buildings.ForEach(b => GameObject.Find(b).GetComponent<MeshRenderer>().material = orchestrator.material);
+        label.buildings.ForEach(b => orchestrator.SetHighlight(GameObject.Find(b), false));
         Request.response.labels.Remove(label);
 
         StartCoroutine(Request.DeleteLabel(payload));

@@ -280,6 +280,19 @@ public class Orchestrator : MonoBehaviour
         worldLoader.EnableColliders();
     }
 
+    public void SetHighlight(GameObject building, bool highlight) {
+        building.GetComponent<MeshRenderer>().material = highlight ? highlightMaterial : material;
+
+        // Remove old listeners
+        var interactable = building.GetComponent<XRSimpleInteractable>();
+        interactable.hoverEntered.RemoveAllListeners();
+        interactable.hoverExited.RemoveAllListeners();
+        interactable.selectExited.RemoveAllListeners();
+
+        // Add new listeners depending on highlight state
+        worldLoader.AddInteractionListeners(building, highlight);
+    }
+
     public void CommitLabel(AddLabelPayload payload, GameObject building = null) {
         newLabel.SetActive(false);
         controllerHelper.SetMode(ControllerMode.Labeling);
@@ -300,15 +313,7 @@ public class Orchestrator : MonoBehaviour
             relativePosition -= new Vector3(WorldLoader.X_offset, 0, WorldLoader.Z_offset);
             relativePosition += buildings.transform.localPosition;
 
-            building.GetComponent<MeshRenderer>().material = highlightMaterial;
-
-            var interactable = building.GetComponent<XRSimpleInteractable>();
-            interactable.hoverEntered.RemoveAllListeners();
-            interactable.hoverExited.RemoveAllListeners();
-            interactable.selectExited.RemoveAllListeners();
-            
-            Destroy(building.GetComponent<MeshCollider>());
-            Destroy(interactable);
+            SetHighlight(building, true);
         } else {
             relativePosition -= new Vector3(
                 Request.response.coordinates.east, 

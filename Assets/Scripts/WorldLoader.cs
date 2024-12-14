@@ -61,6 +61,17 @@ public class WorldLoader
         orchestrator.TryStartAlignment();
     }
 
+    public void AddInteractionListeners(GameObject building, bool highlight)
+    {
+        var interactable = building.GetComponent<XRSimpleInteractable>();
+        var meshRenderer = building.GetComponent<MeshRenderer>();
+        var mesh = building.GetComponent<MeshFilter>().sharedMesh;
+    
+        interactable.hoverEntered.AddListener(_ => HoverEnteredBuilding(meshRenderer, highlight));
+        interactable.hoverExited.AddListener(_ => HoverExitedBuilding(meshRenderer, highlight));
+        interactable.selectExited.AddListener(_ => SelectedBuilding(building, mesh, highlight));
+    }
+
     GameObject SpawnBuilding(Mesh mesh, bool highlight) {
         double distance = Vector3.Distance(mesh.bounds.center, -buildings.transform.localPosition);
         if(distance > radius)
@@ -73,11 +84,9 @@ public class WorldLoader
         if(distance < colliderRadius) {
             building.AddComponent<MeshCollider>();
             var interactable = building.AddComponent<XRSimpleInteractable>();
-            interactable.interactionManager = this.interactionManager;
-            interactable.hoverEntered.AddListener(_ => HoverEnteredBuilding(meshRenderer, highlight));
-            interactable.hoverExited.AddListener(_ => HoverExitedBuilding(meshRenderer, highlight));
-
-            interactable.selectExited.AddListener(_ => SelectedBuilding(building, mesh, highlight));
+            interactable.interactionManager = interactionManager;
+    
+            AddInteractionListeners(building, highlight);
         }
 
         return building;
@@ -88,7 +97,7 @@ public class WorldLoader
 
         var colliderComponent = terrain.AddComponent<MeshCollider>();        
         var interactable = terrain.AddComponent<XRSimpleInteractable>();
-        interactable.interactionManager = this.interactionManager;
+        interactable.interactionManager = interactionManager;
         interactable.selectExited.AddListener(_ => SelectedTerrain(terrain));
 
         return terrain;
@@ -116,7 +125,7 @@ public class WorldLoader
     private void HoverEnteredBuilding(MeshRenderer meshRenderer, bool highlighted) {
         if(!enableColliders) return;
 
-        if(highlighted && orchestrator.EditMode)
+        if(highlighted)
             meshRenderer.material = orchestrator.editMaterial;
         
         if(!highlighted && !orchestrator.EditMode)
@@ -136,12 +145,11 @@ public class WorldLoader
         if(!enableColliders) return;
 
         Debug.Log($"Building hit at: {mesh.bounds.center}");
-        if(orchestrator.EditMode) {
-            if(highlighted) {
-                string labelName = Request.response.labels.Find(l => l.buildings.Contains(mesh.name)).name;
-                orchestrator.EditLabel(labelName, building);
-            }
-        } else {
+        if(highlighted) {
+            string labelName = Request.response.labels.Find(l => l.buildings.Contains(mesh.name)).name;
+            orchestrator.SetEditMode(true);
+            orchestrator.EditLabel(labelName, building);
+        } else if (!orchestrator.EditMode) {
             AddLabelPayload payload = new AddLabelPayload();
             payload.east = mesh.bounds.center.x + X_offset;
             payload.north = mesh.bounds.center.z + Z_offset;
