@@ -92,7 +92,6 @@ public class Orchestrator : MonoBehaviour
 
         sceneSelection.SetActive(false);
         SetAdjustmentMode(false);
-        viewSettings.SetActive(true);
         SetFarClippingPlane(farClippingBound);
         viewSettings.SetActive(true);
 #endif
@@ -113,14 +112,16 @@ public class Orchestrator : MonoBehaviour
             // Disable the ViewSettings UI and set the material to opaque
             viewSettings.SetActive(false);
             editLabels.SetActive(true);
+            controllerHelper.SetMode(ControllerMode.MenuScrolling);
         }
         else
         {
             CancelLabelEdit();
 
             // Enable the ViewSettings UI
-            viewSettings.SetActive(false);
+            viewSettings.SetActive(true);
             editLabels.SetActive(false);
+            controllerHelper.SetMode(ControllerMode.Menu);
         }
     }
 
@@ -259,11 +260,13 @@ public class Orchestrator : MonoBehaviour
 
     public void EditLabel(string name, GameObject building = null) {
         worldLoader.DisableColliders();
+        controllerHelper.SetMode(ControllerMode.Selecting);
         editLabels.GetComponent<EditLabels>().InitiateEdit(name, building);
     }
 
     public void CancelLabelEdit() {
         worldLoader.EnableColliders();
+        controllerHelper.SetMode(ControllerMode.MenuScrolling);
     }
 
     public void CreateLabel(AddLabelPayload payload, GameObject building = null) {
