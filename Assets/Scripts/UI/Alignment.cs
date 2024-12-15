@@ -81,12 +81,14 @@ public class Alignment : MonoBehaviour
     }
 
     void highlightLabel(string meshId) {
-        if(GameObject.Find(meshId) != null) {
+        if(GameObject.Find(meshId) != null) {            
             Vector3 closestVertex = getClosestVertex(GameObject.Find(meshIds[step]));
+            float scale = 8*(closestVertex.magnitude/1000);
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.name = alignmentSphereName;
+            sphere.transform.parent = orchestrator.marker.transform;
+            sphere.transform.localScale = new Vector3(scale, scale, scale);
             sphere.transform.position = closestVertex;
-            sphere.transform.localScale = new Vector3(3f, 3f, 3f);
+            sphere.name = alignmentSphereName;
             GameObject.Find(meshId).GetComponent<MeshRenderer>().material =  orchestrator.editMaterial;
         }
     }

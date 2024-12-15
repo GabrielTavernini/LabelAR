@@ -86,6 +86,7 @@ public class LabelLoader
             lineRenderer.positionCount = 2;
             lineRenderer.SetPosition(0, obj.transform.position - new Vector3(0,heightGap,0));
             lineRenderer.SetPosition(1, obj.transform.position - new Vector3(0,scale,0));
+            lineRenderer.useWorldSpace = false;
         }
 
         // Add a TextMesh component to display the text

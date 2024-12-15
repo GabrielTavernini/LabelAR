@@ -60,7 +60,7 @@ public class ControllerHelper: MonoBehaviour
 
             case ControllerMode.MenuScrolling:
                 bumper.SetActive(false);
-                triggerText.text = "Scroll";
+                triggerText.text = "Select";
                 menuText.text = "Close Menu";
                 padText.text = "Scroll";
                 break;
@@ -74,7 +74,7 @@ public class ControllerHelper: MonoBehaviour
     
             case ControllerMode.Scrolling:
                 bumper.SetActive(false);
-                triggerText.text = "Scroll";
+                triggerText.text = "Select";
                 menu.SetActive(false);
                 padText.text = "Scroll";
                 break;
