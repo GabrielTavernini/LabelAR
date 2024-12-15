@@ -237,7 +237,7 @@ MonoBehaviour:
     m_NormalColor: {r: 0.46666667, g: 0.35686275, b: 0.8666667, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.46666667, g: 0.35686275, b: 0.8666667, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -322,14 +322,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Press <color=#775BDD><b>up</b></color> or <color=#775BDD><b>down</b></color>
-    to correct the world height and use the controller''s <b>bumper button</b> to
-    fine-tune the orientation.
-
-
-    Optionally grab and move the cube.
-
-'
+  m_text: Press <color=#775BDD><b>up</b></color> or <color=#775BDD><b>down</b></color>
+    to correct the world height and use the controller's <color=#775BDD><b>bumper</b></color>
+    button to fine-tune the orientation.\n\nOptionally grab and move the cube.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -769,7 +764,7 @@ MonoBehaviour:
     m_NormalColor: {r: 0.46666667, g: 0.35686275, b: 0.8666667, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.46666667, g: 0.35686275, b: 0.8666667, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -890,7 +885,7 @@ MonoBehaviour:
     m_NormalColor: {r: 0.46666667, g: 0.35686275, b: 0.8666667, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.46666667, g: 0.35686275, b: 0.8666667, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -1139,7 +1134,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 2
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &4833119345549660740
 MonoBehaviour:
   m_ObjectHideFlags: 0

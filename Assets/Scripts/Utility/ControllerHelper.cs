@@ -27,7 +27,7 @@ public class ControllerHelper: MonoBehaviour
 
     public void SetMode(ControllerMode mode)
     {
-        SetAllActive(true);
+        SetAllActive(false);
         TMP_Text bumperText = bumper.GetComponent<TMP_Text>();
         TMP_Text triggerText = trigger.GetComponent<TMP_Text>();
         TMP_Text menuText = menu.GetComponent<TMP_Text>();
@@ -38,7 +38,6 @@ public class ControllerHelper: MonoBehaviour
         switch (mode)
         {
             case ControllerMode.Adjustment:
-                SetAllActive(false);
                 menu.SetActive(true);
                 bumper.SetActive(true);
                 trigger.SetActive(true);
@@ -48,7 +47,6 @@ public class ControllerHelper: MonoBehaviour
                 break;
 
             case ControllerMode.Labeling:
-                SetAllActive(false);
                 menu.SetActive(true);
                 trigger.SetActive(true);
                 triggerText.text = "Add Label";
@@ -56,7 +54,6 @@ public class ControllerHelper: MonoBehaviour
                 break;
 
             case ControllerMode.Menu:
-                SetAllActive(false);
                 menu.SetActive(true);
                 trigger.SetActive(true);
                 triggerText.text = "Select";
@@ -64,7 +61,6 @@ public class ControllerHelper: MonoBehaviour
                 break;
 
             case ControllerMode.MenuScrolling:
-                SetAllActive(false);
                 pad.SetActive(true);
                 menu.SetActive(true);
                 trigger.SetActive(true);
@@ -74,13 +70,11 @@ public class ControllerHelper: MonoBehaviour
                 break;
     
             case ControllerMode.Selecting:
-                SetAllActive(false);
                 trigger.SetActive(true);
                 triggerText.text = "Select";
                 break;
     
             case ControllerMode.Scrolling:
-                SetAllActive(false);
                 pad.SetActive(true);
                 trigger.SetActive(true);
                 triggerText.text = "Select";

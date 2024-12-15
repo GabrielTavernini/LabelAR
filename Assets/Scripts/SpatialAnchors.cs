@@ -16,7 +16,6 @@ public class SpatialAnchors
     private MagicLeapSpatialAnchorsStorageFeature anchorStorageFeature;
     private MagicLeapLocalizationMapFeature mapFeature;
     private MLXrAnchorSubsystem activeSubsystem;
-    private List<ARAnchor> activeAnchors = new();
     private readonly List<ARAnchor> activeAnchorsStored = new();
     private bool queryResponseReceived = false;
     public ARAnchor anchor { get; private set; }
@@ -60,20 +59,19 @@ public class SpatialAnchors
     public IEnumerator CreateAnchor(GameObject newAnchor)
     {
         ARAnchor toPublish = newAnchor.AddComponent<ARAnchor>();
-        activeAnchors.Add(toPublish);
-
         while (toPublish.trackingState != TrackingState.Tracking)
             yield return null;
 
         Debug.Log(
-            "Anchors count: " + activeAnchors.Count + "\n" +
             "Anchors Storage count: " + activeAnchorsStored.Count + "\n"
         );
         if (activeAnchorsStored.Count > 0)
         {
-            anchorStorageFeature.DeleteStoredSpatialAnchors(activeAnchorsStored);
+            Debug.Log("DeleteStoredSpatialAnchors call response: " + anchorStorageFeature.DeleteStoredSpatialAnchors(activeAnchorsStored));
+            while (activeAnchorsStored.Count > 0) yield return null;
+            Debug.Log("Delete Done!");
         }
-        anchorStorageFeature.PublishSpatialAnchorsToStorage(new List<ARAnchor> { toPublish }, 0);
+        Debug.Log("PublishSpatialAnchorsToStorage call response: " + anchorStorageFeature.PublishSpatialAnchorsToStorage(new List<ARAnchor> { toPublish }, 0));
     }
 
     #region persistence callbacks
@@ -113,6 +111,13 @@ public class SpatialAnchors
             }
         }
 
+        Debug.Log("OnAnchorQueryComplete: \n" +
+            "anchorMapPositionIds count: " + anchorMapPositionIds.Count + "\n" +
+            "activeAnchorsStored count: " + activeAnchorsStored.Count + "\n" +
+            "alreadyCreated count: " + alreadyCreated.Count + "\n" +
+            "createStoredAnchors count: " + createStoredAnchors.Count + "\n"
+        );
+
         queryResponseReceived = true;
         if (createStoredAnchors.Count > 0)
         {
@@ -143,16 +148,22 @@ public class SpatialAnchors
     {
         Debug.Log("OnAnchorsChanged: \n" +
             "Anchors Added count: " + anchorsChanged.added.Count + "\n" +
-            "Anchors Removed count: " + anchorsChanged.removed.Count + "\n"
+            "Anchors Updated count: " + anchorsChanged.updated.Count + "\n" +
+            "Anchors Removed count: " + anchorsChanged.removed.Count + "\n"+
+            "Active anchor: " + anchor + "\n"+
+            "Anchors Stored count: " + activeAnchorsStored.Count + "\n"
         );
         // Check for newly added Stored Anchors this Script may not yet know about.
         if (anchorsChanged.added.Count > 0)
             this.anchor = anchorsChanged.added[0];
+        if (anchorsChanged.updated.Count > 0)
+            this.anchor = anchorsChanged.updated[0];
 
         foreach (ARAnchor anchor in anchorsChanged.added)
         {
             if (activeSubsystem.IsStoredAnchor(anchor))
             {
+                Debug.Log("store added anchor");
                 activeAnchorsStored.Add(anchor);
             }
         }
@@ -161,6 +172,7 @@ public class SpatialAnchors
         {
             if (activeSubsystem.IsStoredAnchor(anchor) && !activeAnchorsStored.Contains(anchor))
             {
+                Debug.Log("store updated anchor");
                 activeAnchorsStored.Add(anchor);
             }
         }
@@ -170,9 +182,14 @@ public class SpatialAnchors
         {
             if (activeAnchorsStored.Contains(anchor))
             {
+                Debug.Log("remove storage anchor");
                 activeAnchorsStored.Remove(anchor);
             }
         }
+
+        Debug.Log("Active anchor: " + anchor + "\n"+
+            "Anchors Stored count: " + activeAnchorsStored.Count + "\n"
+        );
     }
     #endregion
 }

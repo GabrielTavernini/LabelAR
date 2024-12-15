@@ -42,9 +42,14 @@ public class Alignment : MonoBehaviour
     }
 
     public void init() {
-        step = 0;
-        highlightLabel(meshIds[step]);
-        nextButton.gameObject.SetActive(true);
+        if(meshIds.Count() > 0) {
+            step = 0;
+            highlightLabel(meshIds[step]);
+            nextButton.gameObject.SetActive(true);
+        } else {
+            text.text = "Waiting for the meshes to finish loading...";
+            title.text = "Loading Meshes";
+        }
     }
 
     void upClick() {
@@ -82,9 +87,10 @@ public class Alignment : MonoBehaviour
     }
 
     void highlightLabel(string meshId) {
-        text.text = "Look aroud to find the building higlighted in <color=#00FF00><b>green</b></color> and align the <b>white sphere</b> with the corresponding corner.\n\n";
-        title.text = "Align Building " + (step+1);
         if(GameObject.Find(meshId) != null) {            
+            text.text = "Look around to find the building higlighted in <color=#00FF00><b>green</b></color>. Align the <b>white sphere</b> with the corresponding corner using the <color=#775BDD><b>bumper</b></color> to rotate.\n\n";
+            title.text = "Align Building " + (step+1);
+
             Vector3 closestVertex = getClosestVertex(GameObject.Find(meshIds[step]));
             float scale = 8*(closestVertex.magnitude/1000);
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -110,7 +116,7 @@ public class Alignment : MonoBehaviour
     }
 
     void nextClick() {
-        if(step >= 3) return;
+        if(step >= 3 || meshIds.Count() == 0) return;
 
         restoreLabel(meshIds[step]);
         if(GameObject.Find(meshIds[step]) != null) {
@@ -130,7 +136,7 @@ public class Alignment : MonoBehaviour
         if(step < 3) {
             highlightLabel(meshIds[step]);
         } else {
-            text.text = "Press <color=#775BDD><b>up</b></color> or <color=#775BDD><b>down</b></color> to correct the world height and use the controller's <b>bumper button</b> to fine-tune the orientation.\n\nOptionally grab and move the cube.";
+            text.text = "Press <color=#775BDD><b>up</b></color> or <color=#775BDD><b>down</b></color> to correct the world height and use the controller's <color=#775BDD><b>bumper</b></color> button to fine-tune the orientation.\n\nOptionally grab and move the cube.";
             title.text = "Fine-tune alignment";
             nextButton.gameObject.SetActive(false);
             triangulate();

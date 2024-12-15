@@ -82,7 +82,8 @@ public class WorldLoader
 
         var meshRenderer = building.GetComponent<MeshRenderer>();
         if(distance < colliderRadius) {
-            building.AddComponent<MeshCollider>();
+            var colliderComponent = building.AddComponent<MeshCollider>();
+            colliderComponent.enabled = enableColliders;    
             var interactable = building.AddComponent<XRSimpleInteractable>();
             interactable.interactionManager = interactionManager;
     
@@ -95,7 +96,8 @@ public class WorldLoader
     GameObject SpawnTerrain(Mesh mesh) {
         GameObject terrain = SpawnMesh(mesh, orchestrator.material);
 
-        var colliderComponent = terrain.AddComponent<MeshCollider>();        
+        var colliderComponent = terrain.AddComponent<MeshCollider>();
+        colliderComponent.enabled = enableColliders;        
         var interactable = terrain.AddComponent<XRSimpleInteractable>();
         interactable.interactionManager = interactionManager;
         interactable.selectExited.AddListener(_ => SelectedTerrain(terrain));

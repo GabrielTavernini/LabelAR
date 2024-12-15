@@ -88,7 +88,7 @@ public class Orchestrator : MonoBehaviour
         marker.name = "Marker";
         marker.transform.position = new Vector3(0, 0, 0);
         marker.transform.rotation = Quaternion.Euler(new Vector3(0, 150, 0));
-        StartCoroutine(LoadAssets("Andreasturm"));
+        StartCoroutine(LoadAssets("Polyterrasse"));
 
         sceneSelection.SetActive(false);
         SetAdjustmentMode(false);
@@ -135,7 +135,7 @@ public class Orchestrator : MonoBehaviour
             Adjustment adjustment = marker.AddComponent<Adjustment>();
             adjustment.orchestrator = this;
             marker.GetComponent<XRGrabInteractable>().interactionManager = interactionManager;
-            MaterialHelper.SetTransparent(markerMaterial, alpha: 1.0f);
+            MaterialHelper.SetSolid(markerMaterial);
             marker.transform.Find("Text").gameObject.SetActive(true);
 
             // Disable building selection
@@ -176,7 +176,10 @@ public class Orchestrator : MonoBehaviour
 
     public void TryStartAlignment() {
         if(Request.response != null && AdjustmentMode) {
-            alignmentMenu.SetActive(true);
+            if(!alignmentMenu.activeSelf) 
+                alignmentMenu.SetActive(true);
+            else 
+                alignmentMenu.GetComponent<Alignment>().init();
         }
     }
 
@@ -226,7 +229,6 @@ public class Orchestrator : MonoBehaviour
             
         }
         connectionError.SetActive(false);
-        TryStartAlignment();
         
         SetFarClippingPlane(Request.response.visibility);
         SpawnWorld();

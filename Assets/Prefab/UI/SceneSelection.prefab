@@ -344,8 +344,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4456408563421523350}
   m_HandleRect: {fileID: 7600120580803965764}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.9998747
+  m_Value: 1
+  m_Size: 0.99992186
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -385,7 +385,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.01989197}
+  m_AnchoredPosition: {x: 0, y: 0.0012918651}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &5575823317210615270
@@ -443,8 +443,8 @@ GameObject:
   - component: {fileID: 8451598982654594779}
   - component: {fileID: 1910582177129268691}
   - component: {fileID: 6148532450673241044}
-  - component: {fileID: 1367232643637957521}
   - component: {fileID: 4407676502030528367}
+  - component: {fileID: 7836609022423002677}
   m_Layer: 5
   m_Name: SceneSelection
   m_TagString: Untagged
@@ -520,7 +520,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 2
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &3527577799942773092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -595,24 +595,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1367232643637957521
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3600123593011622089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5c0c7aefc930402d9bd3f3d92931953, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemPrefab: {fileID: 582858824404480592, guid: fa929a3b51833461eb18c77ce00a1418, type: 3}
-  scrollViewContent: {fileID: 6336684066887441032}
-  orchestrator: {fileID: 0}
-  helpButton: {fileID: 7313549547096503906}
-  closeButton: {fileID: 7155542227659067465}
-  helpSceneSelection: {fileID: 5774208314846854106}
 --- !u!114 &4407676502030528367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -627,6 +609,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 15
   image: {fileID: 6148532450673241044}
+--- !u!114 &7836609022423002677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3600123593011622089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8671923823a6da74d8753a1fd563c03c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPrefab: {fileID: 582858824404480592, guid: fa929a3b51833461eb18c77ce00a1418, type: 3}
+  scrollViewContent: {fileID: 6336684066887441032}
+  orchestrator: {fileID: 0}
+  helpButton: {fileID: 7313549547096503906}
+  closeButton: {fileID: 7155542227659067465}
+  helpSceneSelection: {fileID: 5774208314846854106}
 --- !u!1 &4019765901563738458
 GameObject:
   m_ObjectHideFlags: 0
