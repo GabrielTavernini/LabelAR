@@ -136,6 +136,7 @@ public class Orchestrator : MonoBehaviour
             adjustment.orchestrator = this;
             marker.GetComponent<XRGrabInteractable>().interactionManager = interactionManager;
             MaterialHelper.SetTransparent(markerMaterial, alpha: 1.0f);
+            marker.transform.Find("Text").gameObject.SetActive(true);
 
             // Disable building selection
             worldLoader.DisableColliders(false);
@@ -159,6 +160,7 @@ public class Orchestrator : MonoBehaviour
             Destroy(marker.GetComponent<Adjustment>());
             marker.GetComponent<XRGrabInteractable>().interactionManager = null;
             MaterialHelper.SetTransparent(markerMaterial, alpha: 0.0f);
+            marker.transform.Find("Text").gameObject.SetActive(false);
 
             // Enable building selection
             worldLoader.EnableColliders(false);
@@ -175,7 +177,6 @@ public class Orchestrator : MonoBehaviour
     public void TryStartAlignment() {
         if(Request.response != null && AdjustmentMode) {
             alignmentMenu.SetActive(true);
-            alignmentMenu.GetComponent<Alignment>().init();
         }
     }
 
@@ -225,6 +226,7 @@ public class Orchestrator : MonoBehaviour
             
         }
         connectionError.SetActive(false);
+        TryStartAlignment();
         
         SetFarClippingPlane(Request.response.visibility);
         SpawnWorld();

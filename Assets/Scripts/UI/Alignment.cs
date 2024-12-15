@@ -18,6 +18,8 @@ public class Alignment : MonoBehaviour
     [SerializeField] private Button downButton;
     [SerializeField] private Button nextButton;
     [SerializeField] private Orchestrator orchestrator;
+    [SerializeField] private TMP_Text text;
+    [SerializeField] private TMP_Text title;
 
     private List<string> meshIds = new();
     private List<double> orientations = new();
@@ -36,7 +38,6 @@ public class Alignment : MonoBehaviour
         while (meshIds.Count() < 3)
             meshIds.Add("");
         Debug.Log($"Triangulation Meshes: {meshIds[0]}, {meshIds[1]}, {meshIds[2]}");
-
         init();
     }
 
@@ -81,6 +82,8 @@ public class Alignment : MonoBehaviour
     }
 
     void highlightLabel(string meshId) {
+        text.text = "Look aroud to find the building higlighted in <color=#00FF00><b>green</b></color> and align the <b>white sphere</b> with the corresponding corner.\n\n";
+        title.text = "Align Building " + (step+1);
         if(GameObject.Find(meshId) != null) {            
             Vector3 closestVertex = getClosestVertex(GameObject.Find(meshIds[step]));
             float scale = 8*(closestVertex.magnitude/1000);
@@ -127,6 +130,8 @@ public class Alignment : MonoBehaviour
         if(step < 3) {
             highlightLabel(meshIds[step]);
         } else {
+            text.text = "Press <color=#775BDD><b>up</b></color> or <color=#775BDD><b>down</b></color> to correct the world height and use the controller's <b>bumper button</b> to fine-tune the orientation.\n\nOptionally grab and move the cube.";
+            title.text = "Fine-tune alignment";
             nextButton.gameObject.SetActive(false);
             triangulate();
         }

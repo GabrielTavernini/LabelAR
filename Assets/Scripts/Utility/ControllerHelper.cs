@@ -38,44 +38,52 @@ public class ControllerHelper: MonoBehaviour
         switch (mode)
         {
             case ControllerMode.Adjustment:
+                SetAllActive(false);
+                menu.SetActive(true);
+                bumper.SetActive(true);
+                trigger.SetActive(true);
                 bumperText.text = "Rotate";
                 triggerText.text = "Grab";
                 menuText.text = "Confirm";
-                pad.SetActive(false);
                 break;
 
             case ControllerMode.Labeling:
-                bumper.SetActive(false);
+                SetAllActive(false);
+                menu.SetActive(true);
+                trigger.SetActive(true);
                 triggerText.text = "Add Label";
                 menuText.text = "Settings";
-                pad.SetActive(false);
                 break;
 
             case ControllerMode.Menu:
-                bumper.SetActive(false);
+                SetAllActive(false);
+                menu.SetActive(true);
+                trigger.SetActive(true);
                 triggerText.text = "Select";
                 menuText.text = "Close Menu";
-                pad.SetActive(false);
                 break;
 
             case ControllerMode.MenuScrolling:
-                bumper.SetActive(false);
+                SetAllActive(false);
+                pad.SetActive(true);
+                menu.SetActive(true);
+                trigger.SetActive(true);
                 triggerText.text = "Select";
                 menuText.text = "Close Menu";
                 padText.text = "Scroll";
                 break;
     
             case ControllerMode.Selecting:
-                bumper.SetActive(false);
+                SetAllActive(false);
+                trigger.SetActive(true);
                 triggerText.text = "Select";
-                menu.SetActive(false);
-                pad.SetActive(false);
                 break;
     
             case ControllerMode.Scrolling:
-                bumper.SetActive(false);
+                SetAllActive(false);
+                pad.SetActive(true);
+                trigger.SetActive(true);
                 triggerText.text = "Select";
-                menu.SetActive(false);
                 padText.text = "Scroll";
                 break;
 

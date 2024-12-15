@@ -8,20 +8,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class FaceCamera : MonoBehaviour
-{
-    public Camera cameraToLookAt;  // Reference to the camera
-
-    void Update()
-    {
-        if (cameraToLookAt != null)
-        {
-            transform.LookAt(cameraToLookAt.transform);
-            transform.Rotate(0, 180, 0);
-        }
-    }
-}
-
 public class LabelLoader
 {
     private GameObject labels;
@@ -97,8 +83,7 @@ public class LabelLoader
         textMesh.alignment = TextAlignmentOptions.Center;
         textMesh.material = textMaterial;
 
-        FaceCamera faceCameraScript = obj.AddComponent<FaceCamera>();
-        faceCameraScript.cameraToLookAt = Camera.main;
+        obj.AddComponent<FaceCamera>();
         Debug.Log("Spawned label " + label.name + " at " + obj.transform.position);
         
         return obj;

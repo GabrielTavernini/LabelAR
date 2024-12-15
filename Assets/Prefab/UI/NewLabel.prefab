@@ -1024,7 +1024,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 2
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &1607500874528983290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1114,7 +1114,6 @@ MonoBehaviour:
   orchestrator: {fileID: 0}
   inputField: {fileID: 5300052989822421452}
   cancelButton: {fileID: 4971539460472027359}
-  keyboard: {fileID: 0}
 --- !u!114 &5734664811359402171
 MonoBehaviour:
   m_ObjectHideFlags: 0
