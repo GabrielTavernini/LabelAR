@@ -15,7 +15,7 @@ After modifying the manifest, **Unity Hub** should take care of downloading the 
 If you are running your own server, the `Request.baseUrl` static attribute within the `Assets/Scripts/Utility/Request.cs` script needs to be modified with the URL of your web server.
 
 ## Obtaining the assets
-For simplicity, we provide a set of pre-selected assets for the city of Zürich which you can find [here](TODO). After unzipping, replace the empty `Assets/Resources` folder with the downloaded folder.
+For simplicity, we provide a set of pre-selected assets for the city of Zürich which you can find [here](https://polybox.ethz.ch/index.php/s/JkaCCkGQjmU8Mh3). After downloading and unzipping the two files, replace the empty `Buildings` and `Terrain` folders under `Assets/Resources` with the downloaded folders.
 
 It's also possible to manually setup any location of your choice by following these steps:
 
